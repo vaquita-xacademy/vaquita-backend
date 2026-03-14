@@ -16,13 +16,18 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "express-validator": "^7.2.1"
+    "express-validator": "^7.2.1",
+    "pg": "^8.20.0",
+    "sequelize": "^6.37.7",
+    "sequelize-cursor-pagination": "^3.5.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.13",
+    "@types/sequelize": "^4.28.20",
     "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
