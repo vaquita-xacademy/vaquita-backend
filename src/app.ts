@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsConfig));
 
-app.use("/api", routes);
+app.use("/api/v1", routes);
 
 async function initializeDatabase() {
     try {
