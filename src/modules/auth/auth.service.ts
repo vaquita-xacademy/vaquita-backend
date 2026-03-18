@@ -9,8 +9,14 @@ export class AuthService {
   }
 
   public async registerDonor(dto: CreateDonorDto) {
+    // Auth delega el alta a la capa que conoce el dominio de donantes.
     const newUser = await this.donorService.create(dto);
     return newUser ?? null;
+  }
+
+  // Normalizamos la salida del usuario para responder siempre un objeto plano.
+  public serializeUser(user: any) {
+    return user?.toJSON ? user.toJSON() : user;
   }
 
 }

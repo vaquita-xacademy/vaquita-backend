@@ -6,6 +6,7 @@ import {
     IsStrongPassword
 } from "class-validator";
 
+// Mantenemos este contrato HTTP y luego lo traducimos al modelo en espanol.
 export class CreateDonorDto {
 
     @IsString()
@@ -20,6 +21,7 @@ export class CreateDonorDto {
     @IsNotEmpty()
     password!: string;
 
+    // Esta confirmacion se compara en el service antes de guardar.
     @IsStrongPassword()
     @IsNotEmpty()
     password_confirmation!: string;
@@ -30,6 +32,6 @@ export class CreateDonorDto {
 
     @IsISO8601()
     @IsNotEmpty()
-    birth_date!: Date;
+    birth_date!: string;
 
 }

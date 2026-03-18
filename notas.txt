@@ -16,3 +16,211 @@ npx sequelize-cli migration:generate --name crear-usuarios
 npx sequelize-cli migration:generate --name crear-proyectos
 npx sequelize-cli migration:generate --name crear-donaciones
 npx sequelize-cli migration:generate --name crear-actualizaciones
+
+
+
+npx sequelize-cli db:create
+npx sequelize-cli db:migrate
+
+
+
+
+//PRUEBAS EN POSTMAN
+
+GUIA RAPIDA BACKEND VAQUITA
+
+1. Comandos base del proyecto
+
+npm install
+npx sequelize-cli db:create
+npx sequelize-cli db:migrate
+npm run dev
+
+
+2. Estado actual de la API
+
+Ruta base:
+/api/v1
+
+Endpoint funcional hoy:
+POST /api/v1/users/register/donor
+
+Objetivo actual:
+- registrar un donante en PostgreSQL
+- crear el tipo de usuario "donante" si todavia no existe
+- guardar password hasheado
+- devolver el usuario creado
+- setear cookie signed con el JWT
+
+
+3. Guia para probar en Postman
+
+3.1 Crear una coleccion
+
+Nombre sugerido:
+Vaquita Backend
+
+
+3.2 Crear una request para registro
+
+Metodo:
+POST
+
+URL:
+http://localhost:3000/api/v1/users/register/donor
+
+Headers:
+Content-Type: application/json
+
+Body:
+raw -> JSON
+
+Payload de ejemplo:
+
+{
+  "full_name": "Lorena Gomez",
+  "email": "loren@example.com",
+  "password": "Password123!",
+  "password_confirmation": "Password123!",
+  "dni": "40111222",
+  "birth_date": "1999-06-18"
+}
+
+
+3.3 Que deberia pasar si todo esta bien
+
+- status esperado: 201
+- respuesta esperada con objeto `donante`
+- el campo `contrasena_hash` no debe venir en la respuesta
+- Postman deberia guardar la cookie `access_token`
+
+Ejemplo esperado:
+
+{
+  "data": {
+    "donante": {
+      "id": 1,
+      "tipo_usuario_id": 1,
+      "nombre_completo": "Loren Gomez",
+      "correo_electronico": "loren@example.com",
+      "dni": "40111222",
+      "fecha_nacimiento": "1998-04-12",
+      "estado": "active",
+      "created_at": "...",
+      "updated_at": "...",
+      "tipoUsuario": {
+        "id": 1,
+        "nombre": "donante"
+      }
+    }
+  }
+}
+
+
+3.4 Como revisar la cookie en Postman
+
+- abrir la respuesta del endpoint
+- revisar la pestaña Cookies
+- confirmar que exista `access_token`
+
+Nota:
+si la cookie no aparece, revisar `COOKIE_SECRET`, `JWT_SECRET` y que el backend haya iniciado correctamente.
+
+
+3.5 Casos de prueba recomendados
+
+Caso 1:
+registro valido
+Resultado esperado:
+201 Created
+
+Caso 2:
+password y password_confirmation distintos
+Resultado esperado:
+400
+Mensaje esperado:
+Las contrasenas no coinciden
+
+Caso 3:
+email repetido
+Resultado esperado:
+409
+Mensaje esperado:
+El correo electronico ya esta registrado
+
+Caso 4:
+dni repetido
+Resultado esperado:
+409
+Mensaje esperado:
+El DNI ya esta registrado
+
+Caso 5:
+email invalido o campos faltantes
+Resultado esperado:
+400
+Mensaje esperado:
+Error en la solicitud
+
+
+3.6 Recomendacion para Postman
+
+Crear un Environment llamado:
+Vaquita Local
+
+Variable:
+base_url = http://localhost:3000/api/v1
+
+Entonces la URL del request quedaria:
+{{base_url}}/users/register/donor
+
+
+4. Endpoints propuestos para dejar una API funcional
+
+4.1 Autenticacion y usuarios
+
+POST /api/v1/users/register/donor
+Crear un nuevo donante
+
+POST /api/v1/users/login
+Autenticar por email y password
+{
+  "email": "loren@example.com",
+  "password": "Password123!"
+}
+
+POST /api/v1/users/logout
+Limpiar cookie de autenticacion
+
+GET /api/v1/users/me
+Obtener el usuario autenticado
+
+
+4.2 Proyectos
+
+POST /api/v1/projects
+Crear un proyecto
+
+{
+  "titulo": "Operacion de Luna",
+  "resumen": "Necesitamos cubrir una cirugia urgente",
+  "descripcion": "Luna necesita una intervencion y controles posteriores.",
+  "monto_objetivo": 250000,
+  "estado": "draft",
+  "fecha_inicio": "2026-03-18",
+  "fecha_fin": "2026-04-30",
+}
+
+
+GET /api/v1/projects
+Listar proyectos
+
+GET /api/v1/projects/:id
+Ver detalle de un proyecto
+
+PATCH /api/v1/projects/:id
+Editar datos del proyecto
+
+PATCH /api/v1/projects/:id/status
+Cambiar estado del proyecto
+

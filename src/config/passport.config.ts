@@ -2,14 +2,15 @@ import JWTStrategy, { JwtFromRequestFunction, StrategyOptions } from "passport-j
 import LocalStrategy from "passport-local";
 import passport from "passport";
 import { compareSync } from "bcrypt";
-// import { User } from "../models";
 import { jwtConfig } from "./jwt.config";
+
+const { Usuario } = require("../models") as { Usuario: any };
 
 export const passportConfig = passport;
 
 const cookieExtractor: JwtFromRequestFunction = function (req) {
   if (req && req.signedCookies)
-    return req.signedCookies['access_token'];
+    return req.signedCookies["access_token"];
   return null;
 };
 
@@ -25,18 +26,26 @@ passportConfig.use(
       passwordField: "password",
       session: false
     },
-    async (email: string, password: string, done) => {
+    async (
+      email: string,
+      password: string,
+      done: (error: any, user?: any, options?: any) => void
+    ) => {
       try {
-        // const user = await User.findOne({ where: { email: email } });
-        const user: any = {};
-        if (!user)
-          return done(null, false, { message: "Credenciales inválidas" });
+        // Buscamos con scope explicito porque el hash no sale en consultas normales.
+        const usuario = await Usuario.scope("conContrasena").findOne({
+          where: { correo_electronico: email }
+        });
 
-        const isValid = compareSync(password, user.toJSON().password);
+        if (!usuario)
+          return done(null, false, { message: "Credenciales invalidas" });
+
+        const isValid = compareSync(password, usuario.get("contrasena_hash"));
         if (!isValid)
-          return done(null, false, { message: "Credenciales inválidas" });
+          return done(null, false, { message: "Credenciales invalidas" });
 
-        return done(null, user);
+        const usuarioSeguro = await Usuario.findByPk(usuario.id);
+        return done(null, usuarioSeguro);
       } catch (err) {
         return done(err);
       }
@@ -50,12 +59,13 @@ passportConfig.use(
     async (jwt_payload, done: JWTStrategy.VerifiedCallback) => {
       try {
         const { data } = jwt_payload;
-        const user: any = {};
-        // const user = await User.findByPk(data.sub);
-        if (!user)
+        // El JWT solo guarda el id; el usuario real se vuelve a leer desde base.
+        const usuario = await Usuario.findByPk(data.sub);
+
+        if (!usuario)
           return done(null, false, { code: 404, message: "Usuario no encontrado" });
 
-        return done(null, user);
+        return done(null, usuario);
       } catch (err) {
         return done(err);
       }
