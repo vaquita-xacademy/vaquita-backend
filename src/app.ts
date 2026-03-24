@@ -4,7 +4,7 @@ import cors from "cors";
 import corsConfig from "./config/cors.config";
 import appConfig from "./config/app.config";
 import routes from "./routes";
-import { sequelize } from "./db/sequelize";
+import { sequelize, setupAssociations } from "./db/models";
 
 const app = express();
 
@@ -12,14 +12,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsConfig));
 
-app.use("/api", routes);
+app.use("/api/v1", routes);
 
 async function initializeDatabase() {
     try {
         await sequelize.authenticate();
         console.log("Conexión a la base de datos establecida correctamente.");
+        setupAssociations();
     } catch (error) {
-        console.error("No se ha podido conectar a la base de datos");
+        console.error("No se pudo conectar a la base de datos");
     }
 };
 
