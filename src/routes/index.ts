@@ -1,8 +1,13 @@
 import { Router } from "express";
+import swaggerRoutes from "./swagger-ui.route";
 
 const router = Router();
 
-// Ejemplo
-// app.use("/auth", authRoutes)
+// Rutas principales
+// router.use("/auth", authRoutes)
+// router.use("/donors", donorRoutes);
+
+// Ruta de documentación Swagger
+router.use("/docs", swaggerRoutes);
 
 export default router;
