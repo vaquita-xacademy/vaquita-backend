@@ -12,12 +12,13 @@
   "paths": {},
   "components": {
     "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    }
+        "cookieAuth": {
+            "type": "apiKey",
+            "in": "cookie",
+            "name": "access_token",
+            "description": "Autenticación mediante JWT almacenado en una cookie HTTP",
+        },
+    },
   },
   "security": [
     {
