@@ -5,6 +5,7 @@ import corsConfig from "./config/cors.config";
 import appConfig from "./config/app.config";
 import routes from "./routes";
 import { sequelize, setupAssociations } from "./db/models";
+import swaggerUiRoute from "./routes/swagger-ui.route";
 
 const app = express();
 
@@ -12,7 +13,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsConfig));
 
+// Rutas de la API
 app.use("/api/v1", routes);
+
+// Swagger UI
+app.use("/api/v1/docs", swaggerUiRoute);
 
 async function initializeDatabase() {
     try {
