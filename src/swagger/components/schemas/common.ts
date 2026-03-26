@@ -18,7 +18,16 @@ export default {
         type: "object",
         properties: {
             message: { type: "string" },
-            errors: { type: "array" }
+            errors: {
+                type: "array",
+                items: {
+                    type: "object",
+                    properties: {
+                        field: { type: "string", example: "email" },
+                        message: { type: "string", example: "El campo es requerido" }
+                    }
+                }
+            }
         },
     },
 }
