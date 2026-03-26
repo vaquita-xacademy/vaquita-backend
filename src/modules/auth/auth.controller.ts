@@ -5,6 +5,7 @@ import { jwtConfig } from "../../config/jwt.config";
 import { setAccessTokenCookie } from "../../helpers/cookies";
 import { errorResponse, success } from "../../helpers/responses";
 import { CreateUserDto } from "../users/dto/create-user.dto";
+import { UserResource } from "../users/resources/user-resource";
 
 export class AuthController {
     private authService: AuthService;
@@ -22,7 +23,9 @@ export class AuthController {
             }, jwtConfig.access_secret, jwtConfig.access_expire);
             setAccessTokenCookie(response, jwt);
 
-            return success(response, { user: user }, 201);
+            return success(
+                response, { user: UserResource.toResponse(user) }, 201
+            );
         } catch (error: any) {
             const statusCode = error.statusCode ?? 500;
             return errorResponse(response, error.message, statusCode);
