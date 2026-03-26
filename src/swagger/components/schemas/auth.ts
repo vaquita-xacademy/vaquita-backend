@@ -22,8 +22,8 @@ export default {
             },
             password_confirmation: {
                 type: "string",
-                minLenght: 8,
-                maxLenght: 60,
+                minLength: 8,
+                maxLength: 60,
                 description: "Confirmación de contraseña",
                 example: "Vaquita1_",
             },

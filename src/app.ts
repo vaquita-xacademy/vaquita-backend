@@ -37,6 +37,7 @@ const startServer = async () => {
     app.listen(appConfig.port, () => {
         console.log(`Servidor corriendo en puerto: ${appConfig.port}`);
         console.log(`Documentacion de la API: http://localhost:${appConfig.port}/api/v1/docs`);
+        console.log(`JSON de la API: http://localhost:${appConfig.port}/api/v1/docs/api.json`);
     });
 };
 
