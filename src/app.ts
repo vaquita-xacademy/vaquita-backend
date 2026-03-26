@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import corsConfig from "./config/cors.config";
 import appConfig from "./config/app.config";
+import cookieParser from "cookie-parser";
+import cookieConfig from "./config/cookies.config";
 import routes from "./routes";
 import { sequelize, setupAssociations } from "./db/models";
 
@@ -11,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsConfig));
+app.use(cookieParser(cookieConfig.secret));
 
 app.use("/api/v1", routes);
 
