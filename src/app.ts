@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import cookieConfig from "./config/cookies.config";
 import routes from "./routes";
 import { sequelize, setupAssociations } from "./db/models";
+import swaggerUiRoute from "./routes/swagger-ui.route";
 
 const app = express();
 
@@ -15,7 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsConfig));
 app.use(cookieParser(cookieConfig.secret));
 
+// Rutas de la API
 app.use("/api/v1", routes);
+
+// Swagger UI
+app.use("/api/v1/docs", swaggerUiRoute);
 
 async function initializeDatabase() {
     try {
