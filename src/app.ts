@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import corsConfig from "./config/cors.config";
 import appConfig from "./config/app.config";
+import cookieParser from "cookie-parser";
+import cookieConfig from "./config/cookies.config";
 import routes from "./routes";
 import { sequelize, setupAssociations } from "./db/models";
 import swaggerUiRoute from "./routes/swagger-ui.route";
@@ -12,6 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsConfig));
+app.use(cookieParser(cookieConfig.secret));
 
 // Rutas de la API
 app.use("/api/v1", routes);
@@ -33,6 +36,7 @@ const startServer = async () => {
     await initializeDatabase();
     app.listen(appConfig.port, () => {
         console.log(`Servidor corriendo en puerto: ${appConfig.port}`);
+        console.log(`Documentacion de la API: http://localhost:${appConfig.port}/api/v1/docs`);
     });
 };
 
