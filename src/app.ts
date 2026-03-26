@@ -36,6 +36,7 @@ const startServer = async () => {
     await initializeDatabase();
     app.listen(appConfig.port, () => {
         console.log(`Servidor corriendo en puerto: ${appConfig.port}`);
+        console.log(`Documentacion de la API: http://localhost:${appConfig.port}/api/v1/docs`);
     });
 };
 

@@ -1,7 +1,7 @@
 import { HttpException } from "./http.exception";
 
 export class UnauthorizedException extends HttpException {
-    constructor(message = 'No autorizado') {
+    constructor(message = 'No autenticado') {
         super(401, message);
     }
 }
