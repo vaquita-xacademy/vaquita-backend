@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { createToken } from "../../helpers/token-generator";
 import { jwtConfig } from "../../config/jwt.config";
-import { setAccessTokenCookie } from "../../helpers/cookies";
+import { clearAccessTokenCookie, setAccessTokenCookie } from "../../helpers/cookies";
 import { errorResponse, success } from "../../helpers/responses";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { UserResource } from "../users/resources/user-resource";
@@ -55,6 +55,30 @@ export class AuthController {
                 error.message,
                 error.statusCode ?? 500
             );
+        }
+    };
+
+    public session = (request: Request, response: Response) => {
+        try {
+            const user = request.user as User;
+            return success(
+                response, { user: UserResource.toResponse(user) }, 200
+            );
+        } catch (error: any) {
+            const statusCode = error.statusCode ?? 500;
+            return errorResponse(response, error.message, statusCode);
+        }
+    };
+
+    public logout = (request: Request, response: Response) => {
+        try {
+            clearAccessTokenCookie(response);
+            return success(
+                response, { message: "Logout exitoso" }, 200
+            );
+        } catch (error: any) {
+            const statusCode = error.statusCode ?? 500;
+            return errorResponse(response, error.message, statusCode);
         }
     };
 

@@ -59,5 +59,50 @@ export default {
             }
         }
     },
-
+    "/api/v1/auth/me": {
+        get: {
+            summary: "Obtener información del usuario",
+            description: "Obtiene la información del usuario autenticado",
+            tags: ["Authentication"],
+            security: [
+                {
+                    cookieAuth: []
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/SessionSuccessResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            }
+        }
+    },
+    "/api/v1/auth/logout": {
+        post: {
+            summary: "Cerrar sesión",
+            description: "Cierra la sesión del usuario",
+            tags: ["Authentication"],
+            security: [
+                {
+                    cookieAuth: []
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/LogoutSuccessResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            }
+        }
+    },
 }

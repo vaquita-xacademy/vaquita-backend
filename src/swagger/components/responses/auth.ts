@@ -44,4 +44,34 @@ export default {
             },
         }
     },
+    SessionSuccessResponse: {
+        description: "Usuario obtenido exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/SessionSuccessExample"
+                    },
+                },
+            },
+        }
+    },
+    LogoutSuccessResponse: {
+        description: "Logout exitoso",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/LogoutSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }
