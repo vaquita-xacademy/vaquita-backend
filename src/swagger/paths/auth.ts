@@ -27,5 +27,37 @@ export default {
 
             }
         }
-    }
+    },
+    "/api/v1/auth/login": {
+        post: {
+            summary: "Iniciar sesión",
+            description: "Ingreso de credenciales para acceder a la aplicación",
+            tags: ["Authentication"],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            $ref: "#/components/schemas/LoginRequestSchema"
+                        }
+                    }
+                }
+            },
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/LoginSuccessResponse"
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/InvalidCredentialsResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            }
+        }
+    },
+
 }
