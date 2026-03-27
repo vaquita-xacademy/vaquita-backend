@@ -4,9 +4,10 @@ import swaggerRoutes from "./swagger-ui.route";
 
 const router = Router();
 
-router.use("/auth", authRoutes)
-
 // Ruta de documentación Swagger
 router.use("/docs", swaggerRoutes);
+
+router.use("/auth", authRoutes)
+
 
 export default router;

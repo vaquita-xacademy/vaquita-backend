@@ -31,7 +31,7 @@ passportConfig.use(
                 if (!user)
                     return done(null, false, { message: "Credenciales inválidas" });
 
-                const isValid = compareSync(password, user.toJSON().password);
+                const isValid = compareSync(password, user.toJSON().password_hash);
                 if (!isValid)
                     return done(null, false, { message: "Credenciales inválidas" });
 
