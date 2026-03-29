@@ -19,4 +19,5 @@ export const errorMessage = {
     boolean: `Debe ser verdadero o falso`,
     date: `Debe ser una fecha válida`,
     string: `Debe ser una cadena de texto válida`,
+    category_invalid: `La categoría seleccionada no es válida`,
 };

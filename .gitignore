@@ -1,4 +1,24 @@
-/dist
-/node_modules
-.env
+# package-lock.json garantiza que todos tengan exactamente las 
+# mismas versiones de las librerías. Si lo ignorás, alguien podría 
+# instalar una versión que rompa el proyecto y sería muy difícil de trackear
 /package-lock.json
+
+# Dependencias y Build
+/node_modules
+/dist
+
+# Variables de entorno
+.env
+.env.local
+
+# TSOA / Documentación
+src/routes/routes.ts
+
+# Sistema y Editores
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# TypeScript
+*.tsbuildinfo

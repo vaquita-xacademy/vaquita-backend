@@ -35,6 +35,7 @@
     "pg": "^8.20.0",
     "sequelize": "^6.37.7",
     "sequelize-cursor-pagination": "^3.5.1",
+    "slugify": "^1.6.8",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
