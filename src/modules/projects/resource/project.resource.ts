@@ -13,8 +13,10 @@ export class ProjectResource {
             image_url: project.image_url,
             status: project.status,
             slug: project.slug,
-            province: project.location_province,
-            city: project.location_city,
+            location: {
+                province: project.location.province,
+                city: project.location.city,
+            },
             created_at: project.created_at,
             updated_at: project.updated_at,
         };

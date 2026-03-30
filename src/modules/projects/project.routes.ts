@@ -9,7 +9,7 @@ const router = Router();
 const projectController = new ProjectController();
 
 router.post(
-    "/projects",
+    "/",
     authenticateJwt,
     authorizeProfile,
     validateDto(CreateProjectDTO),

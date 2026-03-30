@@ -1,5 +1,4 @@
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
-import { errorMessage } from "../../helpers/messages";
 import { Category } from "../../db/models";
 
 @ValidatorConstraint({ name: "CategoryExists", async: true })
@@ -13,7 +12,7 @@ export class CategoryExistsConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments) {
-    return errorMessage.category_invalid;
+    return "La categoría seleccionada no es válida";
   }
 }
 

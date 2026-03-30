@@ -55,12 +55,8 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      location_province: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      location_city: {
-        type: DataTypes.STRING(100),
+      location: {
+        type: DataTypes.JSONB,
         allowNull: false,
       },
       created_at: {
@@ -74,6 +70,12 @@ module.exports = {
         defaultValue: DataTypes.NOW,
       }
     });
+
+    await queryInterface.addIndex("projects", ["location"],{
+      using: "GIN",
+      name: "idx_projects_location",
+      operator: "jsonb_path_ops"
+    })
   },
   async down (queryInterface: QueryInterface) {
     await queryInterface.dropTable("projects");

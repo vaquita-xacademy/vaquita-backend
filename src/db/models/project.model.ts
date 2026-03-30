@@ -3,19 +3,23 @@ import { sequelize } from "../sequelize";
 import { ProjectStatus } from "../../types/enums";
 import Category from "./category.model";
 
+export interface Location {
+    province: string;
+    city: string;
+}
+
 export class Project extends Model {
     public id!: number;
-    public owner_id!: number;
-    public category_id!: number;
+    public owner_id!: number; 
+    public category_id!: number; 
     public title!: string;
     public description!: string;
-    public goal_amount!: number; //importe objetivo
-    public current_amount!: number; //importe actual
+    public goal_amount!: number; 
+    public current_amount!: number; 
     public image_url!: string;
     public status!: ProjectStatus;
     public slug!: string;
-    public location_province!: string;
-    public location_city!: string;
+    public location!: Location;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
 
@@ -69,14 +73,10 @@ Project.init(
             allowNull: false,
             unique: true,
         },
-        location_province: {
-            type: DataTypes.STRING(100),
+        location: {
+            type: DataTypes.JSONB,
             allowNull: false,
-        },
-        location_city: {
-            type: DataTypes.STRING(100),
-            allowNull: false,
-        },
+        }
     },
     {
         sequelize,

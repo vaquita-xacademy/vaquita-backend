@@ -1,6 +1,3 @@
-# package-lock.json garantiza que todos tengan exactamente las 
-# mismas versiones de las librerías. Si lo ignorás, alguien podría 
-# instalar una versión que rompa el proyecto y sería muy difícil de trackear
 /package-lock.json
 
 # Dependencias y Build

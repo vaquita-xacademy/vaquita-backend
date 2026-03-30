@@ -29,6 +29,10 @@ module.exports = {
         name: "Deportes", 
         ...timestamps 
       },
+      { 
+        name: "Comunidad", 
+        ...timestamps 
+      },
     ]);
   },
 

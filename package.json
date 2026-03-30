@@ -33,6 +33,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.20.0",
+    "reflect-metadata": "^0.2.2",
     "sequelize": "^6.37.7",
     "sequelize-cursor-pagination": "^3.5.1",
     "slugify": "^1.6.8",

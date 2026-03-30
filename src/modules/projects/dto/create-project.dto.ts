@@ -1,8 +1,18 @@
-import { IsNotEmpty, IsNumber, IsString, IsUrl, Min, MinLength, Validate } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject, IsString, IsUrl, Min, ValidateNested } from "class-validator";
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists} from "../../../common/validators/category.validator";
 import { Type } from "class-transformer";
 
+export class LocationDTO {
+    
+    @IsNotEmpty({ message: errorMessage.required })
+    @IsString({ message: errorMessage.string })
+    province!: string;
+
+    @IsNotEmpty({ message: errorMessage.required })
+    @IsString({ message: errorMessage.string })
+    city!: string;
+}
 export class CreateProjectDTO {
 
     @IsNotEmpty({ message: errorMessage.required })
@@ -24,13 +34,10 @@ export class CreateProjectDTO {
     @CategoryExists()
     category_id!: number;
     
-    @IsNotEmpty({ message: errorMessage.required })
-    @IsString({ message: errorMessage.string })
-    location_province!: string;
-
-    @IsNotEmpty({ message: errorMessage.required })
-    @IsString({ message: errorMessage.string })
-    location_city!: string;
+    @IsObject({ message: errorMessage.invalid_format})
+    @ValidateNested()
+    @Type(() => LocationDTO)
+    location!: LocationDTO;
 
     @IsNotEmpty({ message: errorMessage.required })
     @IsUrl({}, { message: errorMessage.invalid_format })
