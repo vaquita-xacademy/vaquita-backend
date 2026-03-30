@@ -23,7 +23,7 @@ export const authorizeProfile = async (req: Request, res: Response, next: NextFu
 
         if (!verifiedProfile) {
             return errorResponse(
-                res, "Debes completar su perfil de verificación", 403
+                res, "Debe completar su perfil de verificación", 403
             );
         }
 
