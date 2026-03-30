@@ -21,10 +21,21 @@ export const authorizeProfile = async (req: Request, res: Response, next: NextFu
             where: { user_id: user.id }
         });
 
-        if (!verifiedProfile || verifiedProfile.status !== VerifiedProfileStatus.APPROVED) {
+        if (!verifiedProfile) {
             return errorResponse(
-                res, "No tiene un perfil verificado", 403
+                res, "Debes completar su perfil de verificación", 403
             );
+        }
+
+        if (verifiedProfile.status !== VerifiedProfileStatus.APPROVED) {
+            let message = "No tiene un perfil verificado";
+            if (verifiedProfile.status === VerifiedProfileStatus.PENDING) {
+                message = "Su perfil está en revisión";
+            }
+            if (verifiedProfile.status === VerifiedProfileStatus.REJECTED) {
+                message = "Su perfil fue rechazado";
+            }
+            return errorResponse(res, message, 403);
         }
 
         next();

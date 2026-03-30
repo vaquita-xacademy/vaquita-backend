@@ -7,9 +7,8 @@ const router = Router();
 
 // Ruta de documentación Swagger
 router.use("/docs", swaggerRoutes);
-router.use("/projects", projectRoutes)
 
 router.use("/auth", authRoutes)
-
+router.use("/projects", projectRoutes)
 
 export default router;
