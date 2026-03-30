@@ -2,6 +2,7 @@ import { IsNotEmpty, IsNumber, IsObject, IsString, IsUrl, Min, ValidateNested } 
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists} from "../../../common/validators/category.validator";
 import { Type } from "class-transformer";
+import { TitleUnique } from "../validators/title.validator";
 
 export class LocationDTO {
     
@@ -17,6 +18,7 @@ export class CreateProjectDTO {
 
     @IsNotEmpty({ message: errorMessage.required })
     @IsString({ message: errorMessage.string })
+    @TitleUnique()
     title!: string;
 
     @IsNotEmpty({ message: errorMessage.required })
