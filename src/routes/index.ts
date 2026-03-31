@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authRoutes from "../modules/auth/auth.routes";
 import swaggerRoutes from "./swagger-ui.route";
+import projectRoutes from "../modules/projects/project.routes";
 
 const router = Router();
 
@@ -8,6 +9,6 @@ const router = Router();
 router.use("/docs", swaggerRoutes);
 
 router.use("/auth", authRoutes)
-
+router.use("/projects", projectRoutes)
 
 export default router;

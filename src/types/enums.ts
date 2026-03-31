@@ -15,3 +15,9 @@ export enum EntityType {
     LEGAL = "legal"
 }
 
+export enum ProjectStatus {
+    ACTIVE = "active",
+    PAUSED = "paused",
+    COMPLETED = "completed",
+    CANCELLED = "cancelled"
+}
