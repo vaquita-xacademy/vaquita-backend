@@ -21,3 +21,10 @@ export enum ProjectStatus {
     COMPLETED = "completed",
     CANCELLED = "cancelled"
 }
+
+export enum SortOptions {
+    NEWEST = "newest",
+    OLDEST = "oldest",
+    TITLE_ASC = "title_asc",
+    TITLE_DESC = "title_desc"
+}

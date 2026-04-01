@@ -14,8 +14,8 @@ export default {
             },
         }
     },
-    ListProjectsSuccessResponse: {
-        description: "Proyectos listados exitosamente",
+    GetPaginateProjectsSuccessResponse: {
+        description: "Proyectos listados",
         content: {
             "application/json": {
                 schema: {
@@ -23,7 +23,7 @@ export default {
                 },
                 examples: {
                     success: {
-                        $ref: "#/components/examples/ListProjectsSuccessExample"
+                        $ref: "#/components/examples/ListPaginateProjectsSuccessExample"
                     },
                 },
             },
