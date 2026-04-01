@@ -47,6 +47,12 @@ export default {
                     "city",
                 ],
             },
+            budget_items: {
+                type: "array",
+                items: {
+                    $ref: "#/components/schemas/CreateBudgetItemRequestSchema",
+                },
+            },
         },
         required: [
             "title",
@@ -55,6 +61,26 @@ export default {
             "image_url",
             "category_id",
             "location",
+            "budget_items",
+        ],
+    },
+    CreateBudgetItemRequestSchema: {
+        type: "object",
+        properties: {
+            name: {
+                type: "string",
+                description: "Nombre del item del presupuesto",
+                example: "Compra de plantines nativos",
+            },
+            amount: {
+                type: "number",
+                description: "Monto del item del presupuesto",
+                example: 400,
+            },
+        },
+        required: [
+            "name",
+            "amount",
         ],
     },
 }

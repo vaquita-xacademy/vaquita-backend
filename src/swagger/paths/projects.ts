@@ -33,6 +33,22 @@ export default {
                 },
             },
         },
+        get: {
+            summary: "Listar todos los proyectos",
+            description: "Endpoint para listar todos los proyectos",
+            tags: ["Projects"],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/ListProjectsSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
     },
 }
 

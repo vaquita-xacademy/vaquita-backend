@@ -2,6 +2,7 @@ import { DataTypes, Model, NonAttribute } from "sequelize";
 import { sequelize } from "../sequelize";
 import { ProjectStatus } from "../../types/enums";
 import Category from "./category.model";
+import BudgetItem from "./budget_items.model";
 
 export interface Location {
     province: string;
@@ -24,6 +25,8 @@ export class Project extends Model {
     public readonly updated_at!: Date;
 
     declare category_data?: NonAttribute<Category>;
+    declare budget_items?: NonAttribute<BudgetItem[]>;
+    public progress_percentage!: number;
 }
 
 Project.init(
@@ -49,6 +52,11 @@ Project.init(
         },
         current_amount: {
             type: DataTypes.DECIMAL(15, 2),
+            allowNull: false,
+            defaultValue: 0,
+        },
+        progress_percentage: {
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
         },
@@ -81,6 +89,19 @@ Project.init(
     {
         sequelize,
         tableName: "projects",
+        hooks: {
+            beforeSave: (project: Project) => {
+                const goal = Number(project.goal_amount);
+                const current = Number(project.current_amount);
+
+                if (goal > 0) {
+                    const percentage = (current / goal) * 100;
+                    project.progress_percentage = Math.min(Math.round(percentage), 100);
+                }else {
+                    project.progress_percentage = 0;
+                }
+            }
+        }
     }
 );
 

@@ -34,6 +34,11 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
+      progress_percentage: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -75,6 +80,10 @@ module.exports = {
       using: "GIN",
       name: "idx_projects_location",
       operator: "jsonb_path_ops"
+    })
+
+    await queryInterface.addIndex("projects", ["progress_percentage", "status"], {
+      name: "idx_projects_progress_status",
     })
   },
   async down (queryInterface: QueryInterface) {

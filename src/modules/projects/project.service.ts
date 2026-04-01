@@ -1,9 +1,9 @@
 import { CreateProjectDTO } from "./dto/create-project.dto";
 import { InternalServerErrorException } from "../../exceptions";
 import { sequelize } from "../../db/sequelize";
-import { Category, Project } from "../../db/models";
+import { BudgetItem, Category, Project } from "../../db/models";
 import { ProjectStatus } from "../../types/enums";
-import slugify from "slugify"; //npm install slugify
+import slugify from "slugify";
 
 export class ProjectService {
     public async create(userId: number, dto: CreateProjectDTO) {
@@ -29,7 +29,11 @@ export class ProjectService {
                     image_url: dto.image_url,
                     status: ProjectStatus.ACTIVE,
                     slug: uniqueSlug,
-                }, { transaction }
+                    budget_items: dto.budget_items,
+                },{
+                    include: [{model: BudgetItem, as: 'budget_items'}],
+                    transaction
+                }
             );
 
             if (!projectCreated){
@@ -40,6 +44,10 @@ export class ProjectService {
                 include: [{ 
                     model: Category, 
                     as: "category_data" 
+                },
+                {
+                    model: BudgetItem,
+                    as: 'budget_items'
                 }],
                 transaction
             });

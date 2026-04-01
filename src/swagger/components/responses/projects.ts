@@ -14,4 +14,19 @@ export default {
             },
         }
     },
+    ListProjectsSuccessResponse: {
+        description: "Proyectos listados exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/ListProjectsSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }

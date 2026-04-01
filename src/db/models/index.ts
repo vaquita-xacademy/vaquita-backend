@@ -1,4 +1,5 @@
 import { sequelize } from "../sequelize";
+import BudgetItem from "./budget_items.model";
 import Category from "./category.model";
 import Project from "./project.model";
 import User from "./user.model";
@@ -19,6 +20,10 @@ export function setupAssociations() {
   Category.hasMany(Project, { foreignKey: "category_id", as: "projects" });
   Project.belongsTo(Category, { foreignKey: "category_id", as: "category_data" });
 
+  //Budget Items
+  Project.hasMany(BudgetItem, { foreignKey: "project_id", as: "budget_items" });
+  BudgetItem.belongsTo(Project, { foreignKey: "project_id", as: "project" });
+
 };
 
 export {
@@ -26,5 +31,6 @@ export {
   User,
   VerifiedProfile,
   Project,
-  Category
+  Category,
+  BudgetItem
 };
