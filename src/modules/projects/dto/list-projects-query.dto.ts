@@ -2,12 +2,13 @@ import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from "c
 import { ProjectStatus, SortOptions } from "../../../types/enums";
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists } from "../../../common/validators/category.validator";
+import { PaginateQueryDTO } from "../../../common/dto/paginate-query.dto";
 
-export class ListProjectsQueryDTO {
+export class ListProjectsQueryDTO extends PaginateQueryDTO {
 
     @IsEnum(SortOptions, { message: errorMessage.isEnum(Object.values(SortOptions)) })
     @IsOptional()
-    sort?: string;
+    sort?: SortOptions;
 
     @CategoryExists({ message: errorMessage.invalid })
     @IsNumber({}, { message: errorMessage.numeric })
@@ -22,6 +23,6 @@ export class ListProjectsQueryDTO {
     @IsEnum(ProjectStatus, { message: errorMessage.isEnum(Object.values(ProjectStatus)) })
     @IsNotEmpty({ message: errorMessage.required })
     @IsOptional()
-    status?: string;
+    status?: ProjectStatus;
 
 }

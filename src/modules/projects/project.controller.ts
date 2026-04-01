@@ -4,7 +4,7 @@ import { CreateProjectDTO } from "./dto/create-project.dto";
 import { ProjectService } from "./project.service";
 import { Request, Response } from "express";
 import { ProjectResource } from "./resource/project.resource";
-import { ProjectStatus, SortOptions } from "../../types/enums";
+import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
 
 export class ProjectController {
     private projectService: ProjectService;
@@ -29,18 +29,8 @@ export class ProjectController {
 
     public listProjects = async (request: Request, response: Response) => {
         try {
-            const limit = parseInt(request.query.limit as string);
-            const after = request.query.after as string | undefined;
-            const before = request.query.before as string | undefined;
-            const sort = request.query.sort as SortOptions;
-            const category_id = parseInt(request.query.category_id as string);
-            const search = request.query.search as string | undefined;
-            const status = request.query.status as string as ProjectStatus;
-
-            const projectsPaginate = await this.projectService.listAllPaginate({
-                limit: limit, after: after, before: before,
-                sort: sort, category_id: category_id, search: search, status: status
-            });
+            const query = response.locals.query as ListProjectsQueryDTO;
+            const projectsPaginate = await this.projectService.listAllPaginate(query);
 
             return success(response, projectsPaginate, 200);
         } catch (error: any) {

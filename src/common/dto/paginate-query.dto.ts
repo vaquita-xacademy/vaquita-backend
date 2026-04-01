@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, MinLength } from "class-validator";
-import { errorMessage } from "../../../helpers/messages";
+import { errorMessage } from "../../helpers/messages";
 import { Type } from "class-transformer";
 
 export class PaginateQueryDTO {
@@ -8,7 +8,7 @@ export class PaginateQueryDTO {
     @Type(() => Number)
     @IsNumber({}, { message: errorMessage.numeric })
     @IsNotEmpty({ message: errorMessage.required })
-    limit!: string;
+    limit!: number;
 
     @IsString({ message: errorMessage.string })
     @MinLength(1, { message: errorMessage.minLength(1) })
