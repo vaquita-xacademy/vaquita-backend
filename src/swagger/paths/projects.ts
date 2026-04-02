@@ -119,6 +119,39 @@ export default {
             },
         },
     },
+    "/api/v1/projects/{slug}": {
+        get: {
+            summary: "Obtener un proyecto por slug",
+            description: "Endpoint para obtener un proyecto por slug",
+            tags: ["Projects"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "slug",
+                    required: true,
+                    schema: {
+                        type: "string",
+                        description: "Slug único del proyecto.",
+                        example: "construccion-de-viviendas-105"
+                    }
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/ProjectBySlugSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "404": {
+                    $ref: "#/components/responses/NotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+    },
 
 }
 

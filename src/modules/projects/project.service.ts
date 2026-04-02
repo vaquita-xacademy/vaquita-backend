@@ -116,5 +116,19 @@ export class ProjectService {
         }
         return [['created_at', 'DESC']];
     }
+
+    public async findBySlug(slug: string) {
+        return await Project.findOne({
+            where: {
+                slug: slug
+            },
+            include: [
+                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "amount"]},
+                { model: Category, as: "category_data", attributes: ["id", "name"], },
+                { model: User, as: "owner", attributes: ["id", "name"], },
+            ],
+            attributes: Project.attributes,
+        });
+    }
 }
 

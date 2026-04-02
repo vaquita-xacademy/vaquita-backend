@@ -5,7 +5,7 @@ export class ProjectResource {
     static toResponse(project: Project) {
         return {
             id: project.id,
-            owner_id: project.owner_id,
+            owner: project.owner ? { id: project.owner.id, name: project.owner.name } : null,
             category: project.category_data ? project.category_data.name : null,
             title: project.title,
             description: project.description,

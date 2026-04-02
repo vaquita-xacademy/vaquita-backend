@@ -4,6 +4,7 @@ import { ProjectStatus } from "../../types/enums";
 import Category from "./category.model";
 import BudgetItem from "./budget_items.model";
 import { makePaginate, PaginateOptions, PaginationConnection } from "sequelize-cursor-pagination";
+import User from "./user.model";
 
 export interface Location {
     province: string;
@@ -27,6 +28,7 @@ export class Project extends Model {
 
     declare category_data?: NonAttribute<Category>;
     declare budget_items?: NonAttribute<BudgetItem[]>;
+    declare owner?: NonAttribute<User>;
     public progress!: number;
     declare static paginate: (options: PaginateOptions<Project>) => Promise<PaginationConnection<Project>>;
 
@@ -112,6 +114,11 @@ Project.init(
                     project.progress = Math.min(Math.round(percentage), 100);
                 }else {
                     project.progress = 0;
+                }
+            },
+            beforeUpdate: (project: Project) => {
+                if (project.changed('slug')) {
+                    throw new Error("No se puede editar el slug del proyecto");
                 }
             }
         }

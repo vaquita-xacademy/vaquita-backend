@@ -6,7 +6,6 @@ module.exports = {
     const now = new Date();
     const timestamps = { created_at: now, updated_at: now };
 
-    // Buscar un usuario con el rol 'ADMIN'
     const [user] = await queryInterface.sequelize.query(
       `SELECT id FROM users WHERE role = :role LIMIT 1`, 
       {
@@ -14,7 +13,7 @@ module.exports = {
         type: QueryTypes.SELECT, 
       }
     ) as {id: number}[];
-    const userId = user.id; // ID del usuario ADMIN encontrado
+    const userId = user.id; 
 
     await queryInterface.bulkInsert('projects', [{
       owner_id: userId, 
@@ -28,8 +27,8 @@ module.exports = {
         status: ProjectStatus.ACTIVE,
         slug: "mural-comunitario-123",
         location: JSON.stringify({
-          province: "Entre Ríos",
-          city: "Concordia"
+          province: "La Pampa",
+          city: "Santa Rosa"
         }),
         ...timestamps
       },

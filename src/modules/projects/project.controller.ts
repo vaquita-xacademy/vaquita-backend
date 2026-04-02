@@ -5,6 +5,7 @@ import { ProjectService } from "./project.service";
 import { Request, Response } from "express";
 import { ProjectResource } from "./resource/project.resource";
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
+import { ProjectParamDTO } from "./dto/project-param.dto";
 
 export class ProjectController {
     private projectService: ProjectService;
@@ -36,6 +37,22 @@ export class ProjectController {
         } catch (error: any) {
             const statusCode = error.statusCode ?? 500;
             return errorResponse(response, error.message, statusCode);
+        }
+    };
+
+    public findBySlug = async (request: Request, response: Response) => {
+        try {
+            const params = response.locals.params as ProjectParamDTO;
+            const slug = params.slug;
+
+            const project = await this.projectService.findBySlug(slug);
+            if (!project) {
+                return errorResponse(response, "Proyecto no encontrado", 404);
+            }
+
+            return success(response, { project: ProjectResource.toResponse(project) }, 200);
+        } catch (error: any) {
+            return errorResponse(response, error.message, error.statusCode ?? 500);
         }
     };
 }
