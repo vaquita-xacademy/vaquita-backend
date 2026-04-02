@@ -20,6 +20,7 @@ export class ProjectService {
             const projectCreated = await Project.create(
                 {
                     owner_id: userId,
+                    organization_id: dto.organization_id ?? null,
                     category_id: dto.category_id,
                     title: dto.title,
                     description: dto.description,

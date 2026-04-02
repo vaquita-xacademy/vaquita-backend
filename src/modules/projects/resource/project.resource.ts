@@ -5,6 +5,7 @@ export class ProjectResource {
         return {
             id: project.id,
             owner_id: project.owner_id,
+            organization_id: project.organization_id ?? null,
             category: project.category_data ? project.category_data.name : null,
             title: project.title,
             description: project.description,

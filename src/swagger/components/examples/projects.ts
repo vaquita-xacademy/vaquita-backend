@@ -1,85 +1,83 @@
+const projectDetail = {
+    id: 1,
+    owner_id: 3,
+    organization_id: null,
+    category: "Ecología",
+    title: "Huerta Comunitaria Sur",
+    description: "Proyecto para crear una huerta comunitaria en el barrio sur de La Plata.",
+    goal_amount: 150000,
+    current_amount: 0,
+    image_url: "https://example.com/imagen.jpg",
+    status: "active",
+    slug: "huerta-comunitaria-sur-482",
+    location: { province: "Buenos Aires", city: "La Plata" },
+    created_at: "2026-04-02T00:00:00.000Z",
+    updated_at: "2026-04-02T00:00:00.000Z",
+};
+
+const projectCard = {
+    id: 1,
+    title: "Huerta Comunitaria Sur",
+    image_url: "https://example.com/imagen.jpg",
+    status: "active",
+    slug: "huerta-comunitaria-sur-482",
+    location: { province: "Buenos Aires", city: "La Plata" },
+    category: "Ecología",
+    owner: { id: 3, name: "Jimena" },
+    created_at: "2026-04-02T00:00:00.000Z",
+    updated_at: "2026-04-02T00:00:00.000Z",
+};
+
+const paginateInfo = {
+    has_next: false,
+    has_previous: false,
+    next_cursor: null,
+    prev_cursor: null,
+};
+
 export default {
     CreateProjectSuccessExample: {
         summary: "Proyecto creado exitosamente",
-        value: {
-            data: {
-                project: {
-                    id: 1,
-                    owner_id: 1,
-                    category: "Categoria 1",
-                    title: "Proyecto 1",
-                    description: "Descripción del proyecto 1",
-                    goal_amount: 1000,
-                    current_amount: 0,
-                    image_url: "https://example.com/image.jpg",
-                    status: "active",
-                    slug: "proyecto-1-111",
-                    location: {
-                        province: "Entre Ríos",
-                        city: "Concordia",
-                    },
-                    created_at: "2025-12-17T17:00:00Z",
-                    updated_at: "2025-12-17T17:00:00Z",
-                }
-            }
-        },
+        value: { data: { project: projectDetail } },
     },
+
     ListPaginateProjectsSuccessExample: {
         summary: "Proyectos listados exitosamente",
         value: {
             data: {
                 items: [
-                    {
-                        id: 5,
-                        title: "Otro proyecto 6",
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "otro-proyecto-6-525",
-                        location: {
-                            city: "Capital",
-                            province: "Cordoba"
-                        },
-                        created_at: "2026-03-31T22:07:09.019Z",
-                        updated_at: "2026-03-31T22:07:09.019Z",
-                        category_data: {
-                            id: 4,
-                            name: "Animales"
-                        },
-                        owner: {
-                            id: 2,
-                            name: "Nahuel"
-                        }
-                    },
-                    {
-                        id: 4,
-                        title: "Otro proyecto 5",
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "otro-proyecto-5-481",
-                        location: {
-                            city: "Capital",
-                            province: "Cordoba"
-                        },
-                        created_at: "2026-03-31T22:07:00.439Z",
-                        updated_at: "2026-03-31T22:07:00.439Z",
-                        category_data: {
-                            id: 1,
-                            name: "Ecología"
-                        },
-                        owner: {
-                            id: 2,
-                            name: "Nahuel"
-                        }
-                    }
+                    projectCard,
+                    { ...projectCard, id: 2, title: "Comedor Barrial Norte", slug: "comedor-barrial-norte-317", category: "Comunidad" },
                 ],
-                total_count: 5,
-                paginate_info: {
-                    has_next: true,
-                    has_previous: false,
-                    next_cursor: "WyIyMDI2LTAzLTMxVDIyOjA3OjAwLjQzOVoiLDRd",
-                    prev_cursor: null
-                }
-            }
+                total_count: 2,
+                paginate_info: paginateInfo,
+            },
         },
+    },
+
+    GetProjectBySlugSuccessExample: {
+        summary: "Detalle del proyecto por slug",
+        value: { data: { project: projectDetail } },
+    },
+
+    ListMineProjectsSuccessExample: {
+        summary: "Mis proyectos",
+        value: {
+            data: {
+                items: [projectDetail],
+                total_count: 1,
+                paginate_info: paginateInfo,
+            },
+        },
+    },
+
+    UpdateProjectSuccessExample: {
+        summary: "Proyecto actualizado",
+        value: { data: { project: { ...projectDetail, title: "Huerta Comunitaria Sur — Temporada 2026" } } },
+    },
+
+    UpdateProjectStatusSuccessExample: {
+        summary: "Estado del proyecto actualizado",
+        value: { data: { project: { id: 1, status: "paused" } } },
     },
 }

@@ -152,6 +152,219 @@ El proyecto tiene una base arquitectonica correcta para un MVP. El equipo sabe l
 
 
 -------------------------
+## Relevamiento — Módulo Donations (2026-04-02)
+
+### Requerimiento
+
+Los donors pueden donar dinero a proyectos. El sistema es **simulado** por ahora (sin pasarela de pago real), con intención futura de integrar Mercado Pago.
+
+### Decisiones de diseño confirmadas
+
+| Pregunta | Decisión |
+|----------|----------|
+| ¿Pago real o simulado? | **Simulado** por ahora. Futuro: Mercado Pago (webhooks, estados) |
+| ¿Un donor puede donar múltiples veces al mismo proyecto? | **Sí**, sin límite |
+| ¿Se guarda mensaje? | **Sí**, campo `message` opcional en la donación |
+| ¿Donor puede ver su historial? | **Sí** — `GET /donations/mine` |
+| ¿Owner puede ver donaciones de su proyecto? | **Sí** — puede ver todas las donaciones de sus proyectos |
+| ¿Las donaciones son públicas? | **No** — privadas. Owner ve quiénes donaron; donor ve cuánto donó (sin ver otros donors) |
+| ¿Se puede cancelar? | **No** — permanentes |
+
+---
+
+### Diseño de base de datos
+
+#### Nueva tabla: `donations`
+```
+id            — PK
+donor_id      — FK users (NOT NULL)
+project_id    — FK projects (NOT NULL)
+amount        — DECIMAL(15,2), NOT NULL, MIN 1
+message       — TEXT, nullable
+created_at / updated_at
+```
+
+Índices:
+- `idx_donations_donor_id` — para `GET /donations/mine`
+- `idx_donations_project_id` — para que el owner liste donaciones de su proyecto
+
+#### Cambios en `projects`
+- `current_amount` se incrementa con cada donación (lógica en service, dentro de una transacción).
+
+---
+
+### Lógica de negocio
+
+- Solo usuarios con `role = donor` pueden donar (o cualquier autenticado — a definir).
+- El proyecto debe existir y estar en estado `active` para recibir donaciones.
+- La donación y el incremento de `current_amount` ocurren en una **transacción atómica**.
+- No se puede donar a un proyecto `paused`, `completed` o `cancelled`.
+
+---
+
+### Endpoints necesarios
+
+| Método | Ruta | Quién | Descripción |
+|--------|------|-------|-------------|
+| POST | `/donations` | Donor autenticado | Crear una donación |
+| GET | `/donations/mine` | Donor autenticado | Historial de donaciones propias |
+| GET | `/projects/:id/donations` | Owner del proyecto o admin | Ver donaciones de un proyecto |
+
+### Reglas de visibilidad
+
+**`GET /donations/mine`** (donor):
+- Ve: `id`, `project_id`, `project title`, `amount`, `message`, `created_at`
+- No ve: información de otros donors
+
+**`GET /projects/:id/donations`** (owner/admin):
+- Ve: `id`, `donor_id`, `donor name`, `amount`, `message`, `created_at`
+- Requiere ser owner del proyecto o admin
+
+---
+
+### Notas para integración futura con Mercado Pago
+- Agregar columnas `payment_id` (string, nullable) y `payment_status` (enum: `simulated` | `pending` | `approved` | `rejected`) a `donations`.
+- Hoy todas las donaciones se crean con `payment_status = simulated`.
+- Cuando se integre MP: el flow será crear la preferencia → webhook confirma → se ejecuta la lógica de negocio.
+
+---
+
+### Pendiente de implementación
+- [ ] Migración: tabla `donations`
+- [ ] Modelo `Donation`
+- [ ] Asociaciones en `index.ts`
+- [ ] Módulo `donations` (DTO, service, controller, routes, resource)
+- [ ] Swagger: schemas, examples, responses, paths
+- [ ] Actualizar `postman.md`
+
+---
+
+-------------------------
+## Relevamiento — Módulo Organizations (2026-04-02)
+
+### Requerimiento
+
+Surgió la necesidad de que un owner pueda agrupar sus proyectos bajo **organizaciones**. Una organización representa una entidad (fundación, club, grupo) que puede tener múltiples proyectos asociados.
+
+### Decisiones de diseño confirmadas
+
+| Pregunta | Decisión |
+|----------|----------|
+| ¿Un owner puede tener múltiples organizaciones? | **Sí** |
+| ¿La organización es obligatoria para crear un proyecto? | **No** — `organization_id` es nullable en projects |
+| ¿La verificación es por usuario o por organización? | **Ambas** — verificación de usuario (ya existe) + verificación de organización (nueva) |
+| ¿Project mantiene relación con el usuario creador? | **Sí** — `owner_id` se mantiene siempre; `organization_id` es opcional |
+
+---
+
+### Diseño de base de datos
+
+#### Nueva tabla: `organizations`
+```
+id            — PK
+owner_id      — FK users (NOT NULL) — quien crea/posee la org
+name          — STRING(100), NOT NULL
+description   — TEXT, nullable
+logo_url      — TEXT, nullable
+created_at / updated_at
+```
+Relaciones:
+- `User` hasMany `Organization` (via `owner_id`)
+- `Organization` hasMany `Project` (via `organization_id`)
+
+#### Nueva tabla: `organization_verified_profiles`
+Espeja la estructura de `verified_profiles` pero apunta a una organización, no a un usuario.
+```
+id                — PK
+organization_id   — FK organizations (UNIQUE, NOT NULL) — relación 1:1 con la org
+legal_name        — STRING(100), NOT NULL
+tax_id            — STRING(100), UNIQUE, NOT NULL
+document_url      — TEXT, NOT NULL
+entity_type       — ENUM(individual, legal), NOT NULL
+status            — ENUM(pending, approved, rejected), default pending
+created_at / updated_at
+```
+Relaciones:
+- `Organization` hasOne `OrganizationVerifiedProfile`
+
+#### Cambios en `projects`
+- Se mantiene `owner_id` (FK users, NOT NULL) — siempre apunta al usuario creador
+- Se agrega `organization_id` (FK organizations, **nullable**) — opcional
+
+---
+
+### Lógica de autorización actualizada
+
+El middleware `authorizeProfile` necesita adaptarse a dos escenarios:
+
+**Proyecto sin organización** (comportamiento actual, sin cambios):
+```
+owner con verified_profile.status = approved → puede crear proyecto
+```
+
+**Proyecto con organización** (nuevo):
+```
+owner con verified_profile.status = approved
+  AND organization existe
+  AND user es owner de esa organization
+  AND organization_verified_profile.status = approved
+→ puede crear proyecto bajo esa organización
+```
+
+---
+
+### Nuevos endpoints necesarios
+
+#### Organizations
+| Método | Ruta | Quién | Descripción |
+|--------|------|-------|-------------|
+| POST | `/organizations` | Owner autenticado | Crear organización |
+| GET | `/organizations/mine` | Owner autenticado | Listar mis organizaciones |
+| GET | `/organizations/:id` | Público | Ver detalle de una organización |
+| PATCH | `/organizations/:id` | Owner de la org o admin | Editar organización |
+
+#### Verificación de organización
+| Método | Ruta | Quién | Descripción |
+|--------|------|-------|-------------|
+| POST | `/organizations/:id/verification` | Owner de la org | Enviar verificación |
+| GET | `/organizations/:id/verification` | Owner de la org o admin | Ver estado de verificación |
+| PATCH | `/organizations/:id/verification/status` | Admin | Aprobar o rechazar |
+
+#### Cambios en projects
+- `POST /projects` — agregar campo opcional `organization_id` en el DTO
+- `GET /projects` — agregar filtro opcional `organization_id`
+- `GET /organizations/:id/projects` — listar proyectos de una org (alternativa o adicional)
+
+---
+
+### Impacto en código existente
+
+| Archivo | Tipo de cambio |
+|---------|----------------|
+| `src/db/models/project.model.ts` | Agregar `organization_id` (nullable) |
+| `src/db/models/index.ts` | Agregar asociaciones de Organization |
+| `src/modules/projects/dto/create-project.dto.ts` | Agregar `organization_id` opcional |
+| `src/middlewares/authorize-profile.middleware.ts` | Extender lógica para verificar org si se provee `organization_id` |
+| `src/routes/index.ts` | Registrar rutas de organizations |
+| Migraciones | Nueva migración para `organizations` + `organization_verified_profiles` + columna en `projects` |
+
+---
+
+### Pendiente de implementación
+- [ ] Migración: tabla `organizations`
+- [ ] Migración: tabla `organization_verified_profiles`
+- [ ] Migración: agregar `organization_id` a `projects`
+- [ ] Modelo `Organization`
+- [ ] Modelo `OrganizationVerifiedProfile`
+- [ ] Módulo `organizations` (controller + service + routes + DTOs + resource)
+- [ ] Módulo `organization-verifications` (o dentro del mismo módulo de orgs)
+- [ ] Actualizar `authorizeProfile` middleware
+- [ ] Actualizar `CreateProjectDTO` y `ProjectService`
+- [ ] Actualizar `postman.md` con nuevos flujos
+
+---
+
+-------------------------
 Diagnostico de la DB actual
 1. Desincronias modelo ↔ migracion (bugs activos)
 Tabla	Campo	Migracion	Modelo	Problema

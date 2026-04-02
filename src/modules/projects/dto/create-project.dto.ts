@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsObject, IsString, IsUrl, Min, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUrl, Min, ValidateNested } from "class-validator";
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists} from "../../../common/validators/category.validator";
 import { Type } from "class-transformer";
@@ -44,4 +44,9 @@ export class CreateProjectDTO {
     @IsNotEmpty({ message: errorMessage.required })
     @IsUrl({}, { message: errorMessage.invalid_format })
     image_url!: string;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber({}, { message: errorMessage.numeric })
+    organization_id?: number;
 }
