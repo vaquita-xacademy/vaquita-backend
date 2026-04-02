@@ -1,20 +1,19 @@
 import { CreateProjectDTO } from "./dto/create-project.dto";
-import { InternalServerErrorException } from "../../exceptions";
+import { UpdateProjectDTO } from "./dto/update-project.dto";
+import { InternalServerErrorException, ForbiddenException, NotFoundException } from "../../exceptions";
 import { sequelize } from "../../db/sequelize";
 import { Category, Project, User } from "../../db/models";
-import { ProjectStatus, SortOptions } from "../../types/enums";
-import slugify from "slugify"; //npm install slugify
+import { ProjectStatus, SortOptions, UserRole } from "../../types/enums";
+import slugify from "slugify";
 import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
 import { Order, WhereOptions } from "sequelize";
 import { Op } from "sequelize";
+import { ProjectResource } from "./resource/project.resource";
 
 export class ProjectService {
     public async create(userId: number, dto: CreateProjectDTO) {
         return sequelize.transaction(async (transaction) => {
-
-            //generar slug a partir del titulo
-            // Ejemplo: "Ayuda a Comedores" -> "ayuda-a-comedores-168"
             const slug = slugify(dto.title, { lower: true, strict: true });
             const uniqueSlug = `${slug}-${Math.floor(Math.random() * 1000)}`;
 
@@ -28,12 +27,13 @@ export class ProjectService {
                     current_amount: 0,
                     location: {
                         province: dto.location.province,
-                        city: dto.location.city
+                        city: dto.location.city,
                     },
                     image_url: dto.image_url,
                     status: ProjectStatus.ACTIVE,
                     slug: uniqueSlug,
-                }, { transaction }
+                },
+                { transaction }
             );
 
             if (!projectCreated) {
@@ -41,11 +41,8 @@ export class ProjectService {
             }
 
             await projectCreated.reload({
-                include: [{
-                    model: Category,
-                    as: "category_data"
-                }],
-                transaction
+                include: [{ model: Category, as: "category_data" }],
+                transaction,
             });
 
             return projectCreated;
@@ -54,53 +51,122 @@ export class ProjectService {
 
     public async listAllPaginate(queryPaginate: ListPaginateProjectQuery) {
         const include = [
-            { model: Category, as: "category_data", attributes: ["id", "name"], },
-            { model: User, as: "owner", attributes: ["id", "name"], },
+            { model: Category, as: "category_data", attributes: ["id", "name"] },
+            { model: User, as: "owner", attributes: ["id", "name"] },
         ];
         const where: WhereOptions = {};
         const order = this.matchSortOption(queryPaginate.sort) as Order;
 
-        if (queryPaginate.category_id)
-            where.category_id = queryPaginate.category_id;
-
-        if (queryPaginate.status)
-            where.status = queryPaginate.status;
-
+        if (queryPaginate.category_id) where.category_id = queryPaginate.category_id;
+        if (queryPaginate.status) where.status = queryPaginate.status;
         if (queryPaginate.search) {
-            where.title = {
-                [Op.iLike]: `%${queryPaginate.search}%`,
-            };
+            where.title = { [Op.iLike]: `%${queryPaginate.search}%` };
         }
 
         const result = await Project.paginate({
             limit: queryPaginate.limit,
             after: queryPaginate.after,
             before: queryPaginate.before,
-            include: include,
-            where: where,
-            order: order,
+            include,
+            where,
+            order,
             attributes: Project.cardAttributes,
         });
 
-        return toPaginate<Project>(result);
+        const paginated = toPaginate<Project>(result);
+        return {
+            ...paginated,
+            items: paginated.items.map(ProjectResource.toCard),
+        };
+    }
+
+    public async findBySlug(slug: string) {
+        const project = await Project.findOne({
+            where: { slug },
+            include: [
+                { model: Category, as: "category_data" },
+                { model: User, as: "owner", attributes: ["id", "name"] },
+            ],
+        });
+
+        if (!project) {
+            throw new NotFoundException("Proyecto no encontrado");
+        }
+
+        return project;
+    }
+
+    public async listByOwner(ownerId: number, queryPaginate: ListPaginateProjectQuery) {
+        const include = [
+            { model: Category, as: "category_data", attributes: ["id", "name"] },
+        ];
+        const where: WhereOptions = { owner_id: ownerId };
+        const order = this.matchSortOption(queryPaginate.sort) as Order;
+
+        if (queryPaginate.status) where.status = queryPaginate.status;
+        if (queryPaginate.search) {
+            where.title = { [Op.iLike]: `%${queryPaginate.search}%` };
+        }
+
+        const result = await Project.paginate({
+            limit: queryPaginate.limit,
+            after: queryPaginate.after,
+            before: queryPaginate.before,
+            include,
+            where,
+            order,
+            attributes: Project.attributes,
+        });
+
+        const paginated = toPaginate<Project>(result);
+        return {
+            ...paginated,
+            items: paginated.items.map(ProjectResource.toResponse),
+        };
+    }
+
+    public async update(projectId: number, userId: number, userRole: UserRole, dto: UpdateProjectDTO) {
+        const project = await Project.findByPk(projectId);
+
+        if (!project) {
+            throw new NotFoundException("Proyecto no encontrado");
+        }
+
+        if (userRole !== UserRole.ADMIN && project.owner_id !== userId) {
+            throw new ForbiddenException("No tienes permiso para editar este proyecto");
+        }
+
+        await project.update(dto);
+        await project.reload({
+            include: [{ model: Category, as: "category_data" }],
+        });
+
+        return project;
+    }
+
+    public async updateStatus(projectId: number, userId: number, userRole: UserRole, status: ProjectStatus) {
+        const project = await Project.findByPk(projectId);
+
+        if (!project) {
+            throw new NotFoundException("Proyecto no encontrado");
+        }
+
+        if (userRole !== UserRole.ADMIN && project.owner_id !== userId) {
+            throw new ForbiddenException("No tienes permiso para modificar este proyecto");
+        }
+
+        await project.update({ status });
+
+        return project;
     }
 
     private matchSortOption(sortOption?: SortOptions) {
         switch (sortOption) {
-            case SortOptions.NEWEST:
-                return [['created_at', 'DESC']];
-                break;
-            case SortOptions.OLDEST:
-                return [['created_at', 'ASC']];
-                break;
-            case SortOptions.TITLE_ASC:
-                return [['title', 'ASC']];
-                break;
-            case SortOptions.TITLE_DESC:
-                return [['title', 'DESC']];
-                break;
+            case SortOptions.NEWEST: return [["created_at", "DESC"]];
+            case SortOptions.OLDEST: return [["created_at", "ASC"]];
+            case SortOptions.TITLE_ASC: return [["title", "ASC"]];
+            case SortOptions.TITLE_DESC: return [["title", "DESC"]];
+            default: return [["created_at", "DESC"]];
         }
-        return [['created_at', 'DESC']];
     }
 }
-

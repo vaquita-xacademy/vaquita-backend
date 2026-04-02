@@ -82,7 +82,7 @@ Project.init(
             defaultValue: ProjectStatus.ACTIVE
         },
         slug: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.STRING(200),
             allowNull: false,
             unique: true,
         },

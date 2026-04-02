@@ -58,3 +58,135 @@ Endpoints para gestionar verified_profiles (crear, aprobar, rechazar)
 GET de proyectos (listado, detalle)
 Frontend sin lógica real (no consume el backend)
 Tests
+
+
+--------------------------
+
+Analisis Senior — Vaquita Backend
+Sintesis General
+Proyecto Node.js/Express con TypeScript bien estructurado para un MVP de crowdfunding. La arquitectura modular (routes → controller → service → model) es solida y demuestra buenas intenciones de diseño. Sin embargo, hay problemas criticos que deben resolverse antes de cualquier despliegue a produccion.
+
+Stack
+Capa	Tecnologia
+Runtime	Node.js + TypeScript 5.8
+Framework	Express 5.1
+ORM	Sequelize 6 + PostgreSQL
+Auth	Passport.js (JWT + Local) + bcrypt
+Validacion	class-validator + express-validator
+Docs	Swagger/OpenAPI
+Bugs Criticos
+1. Columna password_hash demasiado corta
+src/db/migrations/ — El hash de bcrypt tiene 60+ caracteres, pero la columna esta definida como STRING(100). Si la contrasena + salt excede eso, se trunca silenciosamente y ningun usuario podra loguearse.
+
+
+-- Bug: STRING(100) puede truncar el hash
+password_hash VARCHAR(100)  -- ❌
+
+-- Fix
+password_hash TEXT           -- ✅
+2. Servidor arranca aunque la DB falle
+src/app.ts — initializeDatabase() captura el error y loguea, pero no detiene el proceso. El servidor queda en pie pero crashea en la primera query.
+
+
+// Bug: server sigue vivo sin DB
+await initializeDatabase(); // falla silenciosamente
+await startServer();         // arranca igual ❌
+
+// Fix: exit si falla la conexion
+try {
+  await initializeDatabase();
+} catch (err) {
+  console.error('DB connection failed', err);
+  process.exit(1); // ✅
+}
+3. Modulo Donor incompleto con codigo muerto
+src/modules/donors/ — DonorService.create() tiene codigo comentado. El DTO existe, hay hashing de contrasena pero el usuario nunca se crea. Probablemente una regresion de un merge.
+
+4. Sin handler de errores global
+Cada controller tiene su propio try/catch, pero no existe un middleware (err, req, res, next) en app.ts. Los errores no capturados crashean el proceso sin respuesta HTTP al cliente.
+
+5. Sin validacion de variables de entorno al arranque
+Si JWT_SECRET, DB_PASSWORD o COOKIE_SECRET estan vacias, el servidor arranca sin avisar hasta que el primer request falla de forma críptica.
+
+Problemas de Seguridad
+Severidad	Problema	Fix
+Alta	Sin rate limiting en /auth/login — vulnerable a brute force	express-rate-limit
+Alta	Sin helmet — faltan headers HTTP de seguridad	helmet() como primer middleware
+Media	Sin sanitizacion de inputs (solo validacion)	express-mongo-sanitize o similar
+Media	No se verifica Content-Type en requests	Middleware de content-type
+Baja	Sin request ID — imposible trazar logs en produccion	uuid + header X-Request-Id
+Code Smells / Anti-patrones
+Casting inseguro de tipos — req.body as CreateUserDto y req.user as User sin verificacion. Deberia extenderse la interfaz de Express con el tipo correcto.
+
+Instanciacion manual de servicios — Los controllers hacen new UserService() en el constructor. Dificulta el testing y viola IoC. Considerar un contenedor liviano como awilix.
+
+Mensajes de error dispersos — Algunos en helpers/messages.ts, otros hardcodeados en controllers. Falta consistencia.
+
+Sin logging estructurado — No hay winston ni pino. En produccion es imposible correlacionar eventos.
+
+Sin tests — El script test solo lanza un error. Zero coverage.
+
+Siguientes Pasos (priorizados)
+
+Inmediato (antes de cualquier deploy)
+    Corregir columna password_hash → TEXT en migracion nueva
+    Agregar process.exit(1) si la DB no conecta
+    Agregar middleware de errores global en app.ts
+    Agregar helmet y express-rate-limit en auth routes
+    Validar variables de entorno al arranque (puede ser con zod o envalid)
+Corto plazo
+    Completar o eliminar el modulo Donor — es codigo muerto peligroso
+    Agregar logging con pino (mas rapido que winston en produccion)
+    Extender tipos de Express para req.user y evitar castings
+    Agregar endpoint /health para Docker/Kubernetes
+Mediano plazo
+    Setup de tests con Jest — empezar por servicios (unit) y rutas (integration)
+    Documentar endpoints en Swagger — la infraestructura ya existe, solo faltan los decoradores
+    Revisar indices de DB — las foreign keys probablemente no tienen indices explícitos
+    Agregar Request ID para trazabilidad de logs
+
+Verdict
+El proyecto tiene una base arquitectonica correcta para un MVP. El equipo sabe lo que hace. Los problemas no son de diseño sino de hardening: el bug de password_hash puede impedir logins en produccion hoy mismo, y la ausencia de rate limiting deja la autenticacion expuesta. Con una semana de trabajo focalizado en los puntos criticos, el proyecto estaria en condiciones de produccion.
+
+
+
+
+-------------------------
+Diagnostico de la DB actual
+1. Desincronias modelo ↔ migracion (bugs activos)
+Tabla	Campo	Migracion	Modelo	Problema
+users	password_hash	TEXT ✅	STRING(100) ❌	El modelo truncaria el hash
+verified_profiles	document_url	TEXT ✅	STRING(200) ❌	URLs largas se cortarian
+2. Constraint faltante — verified_profiles.user_id
+La relacion User → VerifiedProfile es 1:1, pero user_id no tiene UNIQUE. Hoy la DB permite que un usuario tenga multiples perfiles verificados.
+
+3. FK sin key: "id" explicito
+En verified_profiles y projects, las referencias son { model: "users" } sin key: "id". Sequelize lo infiere pero es implicito y propenso a errores.
+
+4. Indices faltantes en FK (performance)
+Ningun campo FK tiene indice explicito. PostgreSQL no los crea automaticamente con Sequelize:
+
+Tabla	Campo	Impacto
+verified_profiles	user_id	Cada lookup de perfil hace full scan
+projects	owner_id	Listar proyectos de un owner es lento
+projects	category_id	Filtrar por categoria es lento
+projects	status	El endpoint publico filtra por status siempre
+5. slug demasiado corto
+STRING(100) para el slug de un proyecto. El helper genera ${slug}-${randomNumber} — un titulo largo ya ocupa casi todo el espacio.
+
+6. categories.id sin allowNull: false
+Los demas IDs lo tienen, categories no.
+
+Lo que propongo hacer
+A. Nuevas migraciones (no tocar las existentes — ya corrieron en dev):
+
+Agregar UNIQUE a verified_profiles.user_id
+Agregar indices en todas las FK y projects.status
+Ampliar projects.slug a STRING(200)
+B. Corregir modelos (solo TypeScript, sin tocar DB):
+
+user.model.ts: password_hash → TEXT
+verified-profile.model.ts: document_url → TEXT
+C. Agregar key: "id" en todas las referencias FK
+
+¿La DB de desarrollo ya tiene datos o esta limpia? Eso determina si conviene hacer db:migrate:undo:all y pisar las migraciones, o crear nuevas migraciones de alteracion.

@@ -1,4 +1,4 @@
-import { Project } from "../../../db/models";
+import { Project, User } from "../../../db/models";
 
 export class ProjectResource {
     static toResponse(project: Project) {
@@ -22,7 +22,26 @@ export class ProjectResource {
         };
     }
 
+    static toCard(project: Project) {
+        const owner = project.get("owner") as User | undefined;
+        return {
+            id: project.id,
+            title: project.title,
+            image_url: project.image_url,
+            status: project.status,
+            slug: project.slug,
+            location: {
+                province: project.location.province,
+                city: project.location.city,
+            },
+            category: project.category_data ? project.category_data.name : null,
+            owner: owner ? { id: owner.id, name: owner.name } : null,
+            created_at: project.created_at,
+            updated_at: project.updated_at,
+        };
+    }
+
     static toCollection(projects: Project[]) {
-        return projects.map(project => ProjectResource.toResponse(project));
+        return projects.map(project => ProjectResource.toCard(project));
     }
 }

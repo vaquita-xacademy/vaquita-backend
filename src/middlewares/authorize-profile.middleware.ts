@@ -38,7 +38,7 @@ export const authorizeProfile = async (req: Request, res: Response, next: NextFu
             return errorResponse(res, message, 403);
         }
 
-        next();
+        return next();
     }
 
     return errorResponse(res, "No esta autorizado", 403);
