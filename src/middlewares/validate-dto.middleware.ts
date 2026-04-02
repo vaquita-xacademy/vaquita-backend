@@ -24,3 +24,15 @@ function formatErrors(errors: ValidationError[]) {
         })
     )
 }
+
+export const validateQuery = (dto: any) =>
+    async (req: Request, res: Response, next: NextFunction) => {
+        const instance = plainToInstance(dto, req.query ?? {}) as any;
+        const errors = await validate(instance);
+
+        if (errors.length > 0)
+            return validationErrorResponse(res, formatErrors(errors));
+        
+        res.locals.query = instance;
+        next();
+    };

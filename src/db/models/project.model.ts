@@ -2,6 +2,7 @@ import { DataTypes, Model, NonAttribute } from "sequelize";
 import { sequelize } from "../sequelize";
 import { ProjectStatus } from "../../types/enums";
 import Category from "./category.model";
+import { makePaginate, PaginateOptions, PaginationConnection } from "sequelize-cursor-pagination";
 
 export interface Location {
     province: string;
@@ -10,12 +11,12 @@ export interface Location {
 
 export class Project extends Model {
     public id!: number;
-    public owner_id!: number; 
-    public category_id!: number; 
+    public owner_id!: number;
+    public category_id!: number;
     public title!: string;
     public description!: string;
-    public goal_amount!: number; 
-    public current_amount!: number; 
+    public goal_amount!: number;
+    public current_amount!: number;
     public image_url!: string;
     public status!: ProjectStatus;
     public slug!: string;
@@ -24,7 +25,19 @@ export class Project extends Model {
     public readonly updated_at!: Date;
 
     declare category_data?: NonAttribute<Category>;
+    declare static paginate: (options: PaginateOptions<Project>) => Promise<PaginationConnection<Project>>;
+
+    public static readonly attributes: string[] = [
+        "id", "owner_id", "title", "description", "goal_amount", "current_amount",
+        "image_url", "status", "slug", "location", "created_at", "updated_at"
+    ];
+
+    public static readonly cardAttributes: string[] = [
+        "id", "title", "image_url", "status", "slug", "location", "created_at", "updated_at"
+    ];
+
 }
+Project.paginate = makePaginate(Project);
 
 Project.init(
     {
