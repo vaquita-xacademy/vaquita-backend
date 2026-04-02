@@ -1,15 +1,15 @@
-import { CreateDonorDto } from "../donors/dto/create-donor.dto";
-import { DonorService } from "../donors/donor.service";
+import { CreateUserDto } from "../users/dto/create-user.dto";
+import { UserService } from "../users/users.service";
 
 export class AuthService {
-  private donorService: DonorService;
+  private userService: UserService;
   
   constructor() {
-    this.donorService = new DonorService;
+    this.userService = new UserService;
   }
 
-  public async registerDonor(dto: CreateDonorDto) {
-    const newUser = await this.donorService.create(dto);
+  public async registerUser(dto: CreateUserDto) {
+    const newUser = await this.userService.create(dto);
     return newUser ?? null;
   }
 

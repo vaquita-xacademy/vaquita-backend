@@ -1,6 +1,24 @@
-/dist
+/package-lock.json
+
+# Dependencias y Build
 /node_modules
+/dist
+
+# Variables de entorno
 .env
 /package-lock.json
 /notas
 devlog.md
+.env.local
+
+# TSOA / Documentación
+src/routes/routes.ts
+
+# Sistema y Editores
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# TypeScript
+*.tsbuildinfo

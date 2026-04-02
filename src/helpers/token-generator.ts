@@ -1,14 +1,12 @@
-import jwt, { SignOptions } from "jsonwebtoken";
+import { SignOptions, sign } from "jsonwebtoken";
 
 export function createToken(payload: any, secret: string, expire?: any) {
     const options: SignOptions = {};
 
-    if (expire) {
+    if (expire)
         options.expiresIn = expire;
-    }
 
-    return jwt.sign(
-        { data: payload },
-        secret,
-        options);
+    return sign(
+        { data: payload }, secret, options
+    );
 };
