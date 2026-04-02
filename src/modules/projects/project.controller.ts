@@ -3,7 +3,7 @@ import { errorResponse, success } from "../../helpers/responses";
 import { CreateProjectDTO } from "./dto/create-project.dto";
 import { ProjectService } from "./project.service";
 import { Request, Response } from "express";
-import { ProjectDetailResource } from "./resource/project-detail.resource";
+import { ProjectResource } from "./resource/project.resource";
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
 
 export class ProjectController {
@@ -20,7 +20,7 @@ export class ProjectController {
 
             const project = await this.projectService.create(user.id, body);
             
-            return success(response, { project: ProjectDetailResource.toResponse(project) }, 201);
+            return success(response, { project: ProjectResource.toResponse(project) }, 201);
         } catch (error: any) {
             const statusCode = error.statusCode ?? 500;
             return errorResponse(response, error.message, statusCode);

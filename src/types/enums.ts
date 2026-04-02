@@ -26,5 +26,7 @@ export enum SortOptions {
     NEWEST = "newest",
     OLDEST = "oldest",
     TITLE_ASC = "title_asc",
-    TITLE_DESC = "title_desc"
+    TITLE_DESC = "title_desc",
+    PROGRESS_ASC = "progress_asc",
+    PROGRESS_DESC = "progress_desc"
 }

@@ -1,4 +1,5 @@
 import { Project } from "../../../db/models";
+import { BudgetItemsResource } from "../../budget-items/resource/budget-items.resource";
 
 export class ProjectResource {
     static toResponse(project: Project) {
@@ -7,7 +8,10 @@ export class ProjectResource {
             owner_id: project.owner_id,
             category: project.category_data ? project.category_data.name : null,
             title: project.title,
-            progress: Number(project.progress_percentage),
+            description: project.description,
+            goal_amount: Number(project.goal_amount),
+            current_amount: Number(project.current_amount),
+            progress: Number(project.progress),
             image_url: project.image_url,
             status: project.status,
             slug: project.slug,
@@ -15,6 +19,7 @@ export class ProjectResource {
                 province: project.location.province,
                 city: project.location.city,
             },
+            budget_items: project.budget_items ? BudgetItemsResource.toCollection(project.budget_items) : [],
             created_at: project.created_at,
             updated_at: project.updated_at,
         };

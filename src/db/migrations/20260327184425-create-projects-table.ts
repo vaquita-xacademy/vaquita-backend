@@ -34,7 +34,7 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
-      progress_percentage: {
+      progress: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
@@ -82,7 +82,7 @@ module.exports = {
       operator: "jsonb_path_ops"
     })
 
-    await queryInterface.addIndex("projects", ["progress_percentage", "status"], {
+    await queryInterface.addIndex("projects", ["progress", "status"], {
       name: "idx_projects_progress_status",
     })
   },

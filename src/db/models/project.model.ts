@@ -27,16 +27,16 @@ export class Project extends Model {
 
     declare category_data?: NonAttribute<Category>;
     declare budget_items?: NonAttribute<BudgetItem[]>;
-    public progress_percentage!: number;
+    public progress!: number;
     declare static paginate: (options: PaginateOptions<Project>) => Promise<PaginationConnection<Project>>;
 
     public static readonly attributes: string[] = [
         "id", "owner_id", "title", "description", "goal_amount", "current_amount",
-        "image_url", "status", "slug", "location", "created_at", "updated_at"
+        "image_url", "status", "slug", "location", "progress", "created_at", "updated_at"
     ];
 
     public static readonly cardAttributes: string[] = [
-        "id", "title", "image_url", "status", "slug", "location", "created_at", "updated_at"
+        "id", "title", "image_url", "status", "slug", "location", "progress", "created_at", "updated_at"
     ];
 
 }
@@ -68,7 +68,7 @@ Project.init(
             allowNull: false,
             defaultValue: 0,
         },
-        progress_percentage: {
+        progress: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
@@ -109,9 +109,9 @@ Project.init(
 
                 if (goal > 0) {
                     const percentage = (current / goal) * 100;
-                    project.progress_percentage = Math.min(Math.round(percentage), 100);
+                    project.progress = Math.min(Math.round(percentage), 100);
                 }else {
-                    project.progress_percentage = 0;
+                    project.progress = 0;
                 }
             }
         }

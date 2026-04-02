@@ -70,7 +70,7 @@ export default {
                     name: "sort",
                     schema: {
                         type: "string",
-                        enum: ["newest", "oldest", "title_asc", "title_desc"],
+                        enum: ["newest", "oldest", "title_asc", "title_desc", "progress_asc", "progress_desc"],
                         description: "Opcion para ordenar el listado"
                     }
                 },

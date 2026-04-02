@@ -107,6 +107,12 @@ export class ProjectService {
             case SortOptions.TITLE_DESC:
                 return [['title', 'DESC']];
                 break;
+            case SortOptions.PROGRESS_ASC:
+                return [['progress', 'ASC']];
+                break;
+            case SortOptions.PROGRESS_DESC:
+                return [['progress', 'DESC']];
+                break;
         }
         return [['created_at', 'DESC']];
     }
