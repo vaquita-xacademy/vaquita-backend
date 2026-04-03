@@ -139,4 +139,17 @@ export default {
             },
         },
     },
+    DeleteProjectSuccessResponse: {
+       type: "object",
+       properties: {
+           status: {
+               type: "boolean",
+               example: true,
+           },
+           message: {
+               type: "string",
+               example: "Proyecto eliminado exitosamente",
+           },
+       },
+    },
 }

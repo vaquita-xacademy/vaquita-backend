@@ -72,4 +72,18 @@ export class ProjectController {
             return errorResponse(response, error.message, statusCode);
         }
     };
+
+    public delete = async (request: Request, response: Response) => {
+        try {
+            const { id } = response.locals.params as IdParamDTO;
+            const user = request.user as User;
+
+            await this.projectService.delete(id, user.id, user.role);
+
+            return success(response, { message: "Proyecto eliminado exitosamente" }, 200);
+        } catch (error: any) {
+            const statusCode = error.statusCode ?? 500;
+            return errorResponse(response, error.message, statusCode);
+        }
+    };
 }

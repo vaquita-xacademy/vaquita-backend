@@ -165,4 +165,12 @@ export default {
             }
         },
     },
+    DeleteProjectSuccessExample: {
+        summary: "Proyecto eliminado exitosamente",
+        value: {
+            data: {
+                message: "Proyecto eliminado exitosamente",
+            },
+        },
+    },
 }

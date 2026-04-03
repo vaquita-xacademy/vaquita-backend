@@ -40,4 +40,12 @@ router.patch(
     projectController.update
 );
 
+router.delete(
+    "/:id",
+    authenticateJwt,
+    authorizeProfile,
+    validateParams(IdParamDTO),
+    projectController.delete
+);
+
 export default router;

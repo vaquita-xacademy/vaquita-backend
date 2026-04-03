@@ -166,5 +166,24 @@ export class ProjectService {
 
         return projectUpdate;
     }
+
+    public async delete(id: number, userId: number, userRole: UserRole) {
+        const project = await Project.findByPk(id);
+
+        if (!project) throw new NotFoundException("Proyecto no encontrado");
+
+        if (userRole !== UserRole.ADMIN && project.owner_id !== userId){
+            throw new ForbiddenException("No tienes permiso para editar este proyecto");
+        }
+
+        if (project.status === ProjectStatus.COMPLETED) {
+            throw new ForbiddenException("Los proyectos completados no pueden eliminarse.");
+        }
+
+        ProjectRules.ensureNoDonations(project.current_amount);
+
+        await project.destroy();
+        return true;
+    }
 }
 

@@ -144,7 +144,7 @@ export default {
                     $ref: "#/components/responses/BadRequestResponse"
                 },
                 "404": {
-                    $ref: "#/components/responses/NotFoundResponse"
+                    $ref: "#/components/responses/ModelNotFoundResponse"
                 },
                 "500": {
                     $ref: "#/components/responses/InternalServerErrorResponse"
@@ -195,6 +195,41 @@ export default {
                 },
                 "404": {
                     $ref: "#/components/responses/ModelNotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+        delete: {
+            summary: "Eliminar un proyecto",
+            description: "Endpoint para eliminar un proyecto que no tenga donaciones. Requiere autenticación y autorización.",
+            tags: ["Projects"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: {
+                        type: "integer",
+                        description: "ID del proyecto.",
+                        example: 1
+                    }
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/DeleteProjectSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "403": {
+                    $ref: "#/components/responses/ForbiddenResponse"
                 },
                 "500": {
                     $ref: "#/components/responses/InternalServerErrorResponse"

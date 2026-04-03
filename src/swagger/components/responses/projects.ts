@@ -59,4 +59,19 @@ export default {
             },
         }
     },
+    DeleteProjectSuccessResponse: {
+        description: "Proyecto eliminado exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/DeleteProjectSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }
