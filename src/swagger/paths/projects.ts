@@ -152,6 +152,56 @@ export default {
             },
         },
     },
+    "/api/v1/projects/{id}": {
+        patch: {
+            summary: "Actualizar un proyecto",
+            description: "Endpoint para actualizar los datos de un proyecto existente identificado por su ID. Requiere autenticación y autorización.",
+            tags: ["Projects"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: {
+                        type: "integer",
+                        description: "ID del proyecto.",
+                        example: 1
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            $ref: "#/components/schemas/UpdateProjectRequestSchema",
+                        },
+                    },
+                },
+            },
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/UpdateProjectSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "403": {
+                    $ref: "#/components/responses/ForbiddenResponse"
+                },
+                "404": {
+                    $ref: "#/components/responses/ModelNotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+    },
 
 }
 

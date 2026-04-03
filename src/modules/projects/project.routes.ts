@@ -5,7 +5,8 @@ import { CreateProjectDTO } from "./dto/create-project.dto";
 import { authenticateJwt } from "../../middlewares/authenticate.middleware";
 import { authorizeProfile } from "../../middlewares/authorize-profile.middleware";
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
-import { ProjectParamDTO } from "./dto/project-param.dto";
+import { IdParamDTO, SlugParamDTO } from "./dto/project-param.dto";
+import { UpdateProjectDTO } from "./dto/update-project.dto";
 
 const router = Router();
 const projectController = new ProjectController();
@@ -26,8 +27,17 @@ router.get(
 
 router.get(
     "/:slug",
-    validateParams(ProjectParamDTO),
+    validateParams(SlugParamDTO),
     projectController.findBySlug
+);
+
+router.patch(
+    "/:id",
+    authenticateJwt,
+    authorizeProfile,
+    validateParams(IdParamDTO),
+    validateDto(UpdateProjectDTO),
+    projectController.update
 );
 
 export default router;

@@ -1,15 +1,19 @@
 import { CreateProjectDTO } from "./dto/create-project.dto";
-import { InternalServerErrorException } from "../../exceptions";
+import { ForbiddenException, InternalServerErrorException, NotFoundException } from "../../exceptions";
 import { sequelize } from "../../db/sequelize";
 import { BudgetItem, Category, Project, User } from "../../db/models";
-import { ProjectStatus, SortOptions } from "../../types/enums";
+import { ProjectStatus, SortOptions, UserRole } from "../../types/enums";
 import slugify from "slugify";
 import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
-import { Order, WhereOptions } from "sequelize";
-import { Op } from "sequelize";
+import { Op, Order, WhereOptions } from "sequelize";
+import { validateGoalAmount } from "./rules/project.rules";
+import { UpdateProjectDTO } from "./dto/update-project.dto";
+import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 export class ProjectService {
+    constructor(private readonly budgetItemsService: BudgetItemsService ) {}
+    
     public async create(userId: number, dto: CreateProjectDTO) {
         return sequelize.transaction(async (transaction) => {
 
@@ -45,15 +49,11 @@ export class ProjectService {
             }
 
             await projectCreated.reload({
-                include: [{ 
-                    model: Category, 
-                    as: "category_data" 
-                },
-                {
-                    model: BudgetItem,
-                    as: 'budget_items'
-                }],
-                transaction
+                include: [
+                    {model: Category, as: 'category_data'}, 
+                    {model: BudgetItem, as: 'budget_items'}, 
+                    {model: User, as: 'owner', attributes: ["id", "name"]},
+                ],transaction
             });
 
             return projectCreated;
@@ -118,7 +118,7 @@ export class ProjectService {
     }
 
     public async findBySlug(slug: string) {
-        return await Project.findOne({
+        const project = await Project.findOne({
             where: {
                 slug: slug
             },
@@ -129,6 +129,42 @@ export class ProjectService {
             ],
             attributes: Project.attributes,
         });
+
+        if (!project) {
+            throw new NotFoundException("Proyecto no encontrado");
+        }
+
+        return project;
+    }
+
+    public async update(id: number, userId: number, userRole: UserRole, dto: UpdateProjectDTO) {
+        const projectUpdate = await sequelize.transaction(async (transaction) => {
+            const project = await Project.findByPk(id, {transaction});
+
+            if (!project) throw new NotFoundException("Proyecto no encontrado");
+
+            if (userRole !== UserRole.ADMIN && project.owner_id !== userId)
+                throw new ForbiddenException("No tienes permiso para editar este proyecto");
+
+            if (dto.goal_amount !== undefined)
+                validateGoalAmount(project.current_amount, dto.goal_amount);
+            
+            await project.update(dto, { transaction });
+
+            if (dto.budget_items) {
+                await this.budgetItemsService.sync(project.id, dto.budget_items, transaction);
+            }
+
+            return await project.reload({
+                include: [
+                    {model: Category, as: 'category_data'}, 
+                    {model: BudgetItem, as: 'budget_items'}, 
+                    {model: User, as: 'owner', attributes: ["id", "name"]},
+                ],transaction
+            });
+        });
+
+        return projectUpdate;
     }
 }
 

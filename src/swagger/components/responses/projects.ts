@@ -44,4 +44,19 @@ export default {
             },
         }
     },
+    UpdateProjectSuccessResponse: {
+        description: "Proyecto actualizado exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/UpdateProjectSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }
