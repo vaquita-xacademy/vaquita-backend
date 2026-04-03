@@ -7,13 +7,13 @@ import slugify from "slugify";
 import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
 import { Op, Order, WhereOptions } from "sequelize";
-import { validateGoalAmount } from "./rules/project.rules";
+import { ProjectRules } from "./rules/project.rules";
 import { UpdateProjectDTO } from "./dto/update-project.dto";
 import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 export class ProjectService {
     constructor(private readonly budgetItemsService: BudgetItemsService ) {}
-    
+
     public async create(userId: number, dto: CreateProjectDTO) {
         return sequelize.transaction(async (transaction) => {
 
@@ -147,7 +147,7 @@ export class ProjectService {
                 throw new ForbiddenException("No tienes permiso para editar este proyecto");
 
             if (dto.goal_amount !== undefined)
-                validateGoalAmount(project.current_amount, dto.goal_amount);
+                ProjectRules.ensureCanUpdateGoal(project.current_amount, dto.goal_amount);
             
             await project.update(dto, { transaction });
 
