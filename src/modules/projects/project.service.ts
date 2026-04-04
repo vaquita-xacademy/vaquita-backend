@@ -1,6 +1,6 @@
 import { CreateProjectDTO } from "./dto/create-project.dto";
 import { UpdateProjectDTO } from "./dto/update-project.dto";
-import { InternalServerErrorException, ForbiddenException, NotFoundException } from "../../exceptions";
+import { InternalServerErrorException, ForbiddenException, NotFoundException, ConflictException } from "../../exceptions";
 import { sequelize } from "../../db/sequelize";
 import { BudgetItem, Category, Project, User } from "../../db/models";
 import { ProjectStatus, SortOptions, UserRole } from "../../types/enums";
@@ -16,6 +16,7 @@ export class ProjectService {
     constructor(private readonly budgetItemsService: BudgetItemsService ) {}
 
     public async create(userId: number, dto: CreateProjectDTO) {
+        await this.validateUniqueTitle(dto.title);
         return sequelize.transaction(async (transaction) => {
             const slug = slugify(dto.title, { lower: true, strict: true });
             const uniqueSlug = `${slug}-${Math.floor(Math.random() * 1000)}`;
@@ -138,21 +139,29 @@ export class ProjectService {
 
     public async update(projectId: number, userId: number, userRole: UserRole, dto: UpdateProjectDTO) {
         const project = await Project.findByPk(projectId);
-
-        if (!project) {
-            throw new NotFoundException("Proyecto no encontrado");
-        }
+        if (!project) throw new NotFoundException("Proyecto no encontrado");
 
         if (userRole !== UserRole.ADMIN && project.owner_id !== userId) {
             throw new ForbiddenException("No tienes permiso para editar este proyecto");
         }
 
-        await project.update(dto);
-        await project.reload({
-            include: [{ model: Category, as: "category_data" }],
+        if (dto.title && dto.title !== project.title) {
+            await this.validateUniqueTitle(dto.title, projectId);
+        }
+
+        const projectUpdate = await sequelize.transaction(async (transaction) => {
+            await project.update(dto, { transaction });
+
+            return await project.reload({
+                include: [
+                    {model: Category, as: 'category_data'}, 
+                    {model: BudgetItem, as: 'budget_items'}, 
+                    {model: User, as: 'owner', attributes: ["id", "name"]},
+                ],transaction
+            });
         });
 
-        return project;
+        return projectUpdate;
     }
 
     public async updateStatus(projectId: number, userId: number, userRole: UserRole, status: ProjectStatus) {
@@ -171,18 +180,6 @@ export class ProjectService {
         return project;
     }
 
-    private matchSortOption(sortOption?: SortOptions) {
-        switch (sortOption) {
-            case SortOptions.NEWEST: return [["created_at", "DESC"]];
-            case SortOptions.OLDEST: return [["created_at", "ASC"]];
-            case SortOptions.TITLE_ASC: return [["title", "ASC"]];
-            case SortOptions.TITLE_DESC: return [["title", "DESC"]];
-            case SortOptions.PROGRESS_ASC: return [['progress', 'ASC']];
-            case SortOptions.PROGRESS_DESC: return [['progress', 'DESC']];
-            default: return [["created_at", "DESC"]];
-        }
-    }
-
     public async delete(id: number, userId: number, userRole: UserRole) {
         const project = await Project.findByPk(id);
 
@@ -198,5 +195,29 @@ export class ProjectService {
 
         await project.destroy();
         return true;
+    }
+
+    private matchSortOption(sortOption?: SortOptions) {
+        switch (sortOption) {
+            case SortOptions.NEWEST: return [["created_at", "DESC"]];
+            case SortOptions.OLDEST: return [["created_at", "ASC"]];
+            case SortOptions.TITLE_ASC: return [["title", "ASC"]];
+            case SortOptions.TITLE_DESC: return [["title", "DESC"]];
+            case SortOptions.PROGRESS_ASC: return [['progress', 'ASC']];
+            case SortOptions.PROGRESS_DESC: return [['progress', 'DESC']];
+            default: return [["created_at", "DESC"]];
+        }
+    }
+
+    private async validateUniqueTitle(title: string, projectId?: number){
+        if(!title) return;
+
+        const projectExists = await Project.findOne({
+            where: { title, status: ProjectStatus.ACTIVE,
+                ...(projectId && { id: { [Op.ne]: projectId } })
+            }
+        });
+        
+        if (projectExists) throw new ConflictException("Ya existe un proyecto activo con este nombre");
     }
 }

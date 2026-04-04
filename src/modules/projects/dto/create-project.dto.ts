@@ -2,7 +2,6 @@ import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString, IsUrl, Min, Validate
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists} from "../../../common/validators/category.validator";
 import { Type } from "class-transformer";
-import { TitleUnique } from "../validators/title.validator";
 import { CreateBudgetItemDto } from "../../budget-items/dto/create-budget-items.dto";
 
 export class LocationDTO {
@@ -19,7 +18,6 @@ export class CreateProjectDTO {
 
     @IsNotEmpty({ message: errorMessage.required })
     @IsString({ message: errorMessage.string })
-    @TitleUnique()
     title!: string;
 
     @IsNotEmpty({ message: errorMessage.required })

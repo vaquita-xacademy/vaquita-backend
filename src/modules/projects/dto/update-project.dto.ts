@@ -2,7 +2,6 @@ import { IsArray, IsNumber, IsObject, IsOptional, IsString, IsUrl, MaxLength, Mi
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists } from "../../../common/validators/category.validator";
 import { Type } from "class-transformer";
-import { TitleUnique } from "../validators/title.validator";
 import { UpdateBudgetItemDto } from "../../budget-items/dto/update-budget-items.dto";
 
 export class UpdateLocationDTO {
@@ -21,7 +20,6 @@ export class UpdateProjectDTO {
     @IsOptional()
     @IsString({ message: errorMessage.string })
     @MaxLength(100, { message: errorMessage.max_length(100) })
-    @TitleUnique()
     title?: string;
 
     @IsOptional()
