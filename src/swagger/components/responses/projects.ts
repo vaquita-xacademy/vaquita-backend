@@ -29,4 +29,49 @@ export default {
             },
         }
     },
+    ProjectBySlugSuccessResponse: {
+        description: "Proyecto obtenido exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/ProjectBySlugSuccessExample"
+                    },
+                },
+            },
+        }
+    },
+    UpdateProjectSuccessResponse: {
+        description: "Proyecto actualizado exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/UpdateProjectSuccessExample"
+                    },
+                },
+            },
+        }
+    },
+    DeleteProjectSuccessResponse: {
+        description: "Proyecto eliminado exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/DeleteProjectSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }

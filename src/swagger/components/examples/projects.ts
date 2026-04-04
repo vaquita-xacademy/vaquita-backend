@@ -11,6 +11,7 @@ export default {
                     description: "Descripción del proyecto 1",
                     goal_amount: 1000,
                     current_amount: 0,
+                    progress: 0,
                     image_url: "https://example.com/image.jpg",
                     status: "active",
                     slug: "proyecto-1-111",
@@ -18,6 +19,16 @@ export default {
                         province: "Entre Ríos",
                         city: "Concordia",
                     },
+                    budget_items: [
+                        {
+                            name: "Materiales de construcción",
+                            amount: 100,
+                        },
+                        {
+                            name: "Mano de obra",
+                            amount: 200,
+                        },
+                    ],
                     created_at: "2025-12-17T17:00:00Z",
                     updated_at: "2025-12-17T17:00:00Z",
                 }
@@ -80,6 +91,86 @@ export default {
                     prev_cursor: null
                 }
             }
+        },
+    },
+    ProjectBySlugSuccessExample: {
+        summary: "Proyecto obtenido exitosamente",
+        value: {
+            data: {
+                project: {
+                    id: 1,
+                    owner_id: 1,
+                    category: "Comunidad",
+                    title: "Huerta Comunitaria",
+                    description: "Proyecto para crear una huerta comunitaria para abastecer de alimentos frescos a los vecinos de la zona.",
+                    goal_amount: 1000,
+                    current_amount: 0,
+                    progress: 0,
+                    image_url: "https://example.com/image.jpg",
+                    status: "active",
+                    slug: "huerta-comunitaria-111",
+                    location: {
+                        province: "Entre Ríos",
+                        city: "Concordia",
+                    },
+                    budget_items: [
+                        {
+                            name: "Materiales: Ladrillos, cemento, arena, etc.",
+                            amount: 100,
+                        },
+                        {
+                            name: "Mano de obra: Albañiles, electricistas, etc.",
+                            amount: 200,
+                        },
+                    ],
+                    created_at: "2025-12-17T17:00:00Z",
+                    updated_at: "2025-12-17T17:00:00Z",
+                }
+            }
+        },
+    },
+    UpdateProjectSuccessExample: {
+        summary: "Proyecto actualizado exitosamente",
+        value: {
+            data: {
+                project: {
+                    id: 1,
+                    owner_id: 1,
+                    category: "Comunidad",
+                    title: "Huerta Comunitaria",
+                    description: "Proyecto para crear una huerta comunitaria para abastecer de alimentos frescos a los vecinos de la zona.",
+                    goal_amount: 1000,
+                    current_amount: 0,
+                    progress: 0,
+                    image_url: "https://example.com/image.jpg",
+                    status: "active",
+                    slug: "huerta-comunitaria-111",
+                    location: {
+                        province: "Entre Ríos",
+                        city: "Concordia",
+                    },
+                    budget_items: [
+                        {
+                            name: "Materiales: Ladrillos, cemento, arena, etc.",
+                            amount: 100,
+                        },
+                        {
+                            name: "Mano de obra: Albañiles, electricistas, etc.",
+                            amount: 200,
+                        },
+                    ],
+                    created_at: "2025-12-17T17:00:00Z",
+                    updated_at: "2025-12-17T17:00:00Z",
+                }
+            }
+        },
+    },
+    DeleteProjectSuccessExample: {
+        summary: "Proyecto eliminado exitosamente",
+        value: {
+            data: {
+                message: "Proyecto eliminado exitosamente",
+            },
         },
     },
 }

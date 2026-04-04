@@ -34,6 +34,11 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
+      progress: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -51,7 +56,7 @@ module.exports = {
         defaultValue: ProjectStatus.ACTIVE
       },
       slug: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING(200),
         allowNull: false,
         unique: true,
       },
@@ -75,6 +80,10 @@ module.exports = {
       using: "GIN",
       name: "idx_projects_location",
       operator: "jsonb_path_ops"
+    })
+
+    await queryInterface.addIndex("projects", ["progress", "status"], {
+      name: "idx_projects_progress_status",
     })
   },
   async down (queryInterface: QueryInterface) {

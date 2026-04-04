@@ -70,7 +70,7 @@ export default {
                     name: "sort",
                     schema: {
                         type: "string",
-                        enum: ["newest", "oldest", "title_asc", "title_desc"],
+                        enum: ["newest", "oldest", "title_asc", "title_desc", "progress_asc", "progress_desc"],
                         description: "Opcion para ordenar el listado"
                     }
                 },
@@ -112,6 +112,124 @@ export default {
                 },
                 "401": {
                     $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+    },
+    "/api/v1/projects/{slug}": {
+        get: {
+            summary: "Obtener un proyecto por slug",
+            description: "Endpoint para obtener un proyecto por slug",
+            tags: ["Projects"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "slug",
+                    required: true,
+                    schema: {
+                        type: "string",
+                        description: "Slug único del proyecto.",
+                        example: "construccion-de-viviendas-105"
+                    }
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/ProjectBySlugSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "404": {
+                    $ref: "#/components/responses/ModelNotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+    },
+    "/api/v1/projects/{id}": {
+        patch: {
+            summary: "Actualizar un proyecto",
+            description: "Endpoint para actualizar los datos de un proyecto existente identificado por su ID. Requiere autenticación y autorización.",
+            tags: ["Projects"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: {
+                        type: "integer",
+                        description: "ID del proyecto.",
+                        example: 1
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            $ref: "#/components/schemas/UpdateProjectRequestSchema",
+                        },
+                    },
+                },
+            },
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/UpdateProjectSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "403": {
+                    $ref: "#/components/responses/ForbiddenResponse"
+                },
+                "404": {
+                    $ref: "#/components/responses/ModelNotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+        delete: {
+            summary: "Eliminar un proyecto",
+            description: "Endpoint para eliminar un proyecto que no tenga donaciones. Requiere autenticación y autorización.",
+            tags: ["Projects"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: {
+                        type: "integer",
+                        description: "ID del proyecto.",
+                        example: 1
+                    }
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/DeleteProjectSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "403": {
+                    $ref: "#/components/responses/ForbiddenResponse"
                 },
                 "500": {
                     $ref: "#/components/responses/InternalServerErrorResponse"

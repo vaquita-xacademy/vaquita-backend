@@ -1,8 +1,9 @@
-import { IsNotEmpty, IsNumber, IsObject, IsString, IsUrl, Min, ValidateNested } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsObject, IsString, IsUrl, Min, ValidateNested } from "class-validator";
 import { errorMessage } from "../../../helpers/messages";
 import { CategoryExists} from "../../../common/validators/category.validator";
 import { Type } from "class-transformer";
 import { TitleUnique } from "../validators/title.validator";
+import { CreateBudgetItemDto } from "../../budget-items/dto/create-budget-items.dto";
 
 export class LocationDTO {
     
@@ -44,4 +45,9 @@ export class CreateProjectDTO {
     @IsNotEmpty({ message: errorMessage.required })
     @IsUrl({}, { message: errorMessage.invalid_format })
     image_url!: string;
+
+    @IsArray({ message: errorMessage.invalid_format })
+    @ValidateNested({ each: true })
+    @Type(() => CreateBudgetItemDto)
+    budget_items?: CreateBudgetItemDto[];
 }

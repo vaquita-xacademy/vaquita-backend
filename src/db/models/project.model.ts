@@ -2,7 +2,9 @@ import { DataTypes, Model, NonAttribute } from "sequelize";
 import { sequelize } from "../sequelize";
 import { ProjectStatus } from "../../types/enums";
 import Category from "./category.model";
+import BudgetItem from "./budget_items.model";
 import { makePaginate, PaginateOptions, PaginationConnection } from "sequelize-cursor-pagination";
+import User from "./user.model";
 
 export interface Location {
     province: string;
@@ -25,15 +27,18 @@ export class Project extends Model {
     public readonly updated_at!: Date;
 
     declare category_data?: NonAttribute<Category>;
+    declare budget_items?: NonAttribute<BudgetItem[]>;
+    declare owner?: NonAttribute<User>;
+    public progress!: number;
     declare static paginate: (options: PaginateOptions<Project>) => Promise<PaginationConnection<Project>>;
 
     public static readonly attributes: string[] = [
         "id", "owner_id", "title", "description", "goal_amount", "current_amount",
-        "image_url", "status", "slug", "location", "created_at", "updated_at"
+        "image_url", "status", "slug", "location", "progress", "created_at", "updated_at"
     ];
 
     public static readonly cardAttributes: string[] = [
-        "id", "title", "image_url", "status", "slug", "location", "created_at", "updated_at"
+        "id", "title", "image_url", "status", "slug", "location", "progress", "created_at", "updated_at"
     ];
 
 }
@@ -62,6 +67,11 @@ Project.init(
         },
         current_amount: {
             type: DataTypes.DECIMAL(15, 2),
+            allowNull: false,
+            defaultValue: 0,
+        },
+        progress: {
+            type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
         },
@@ -94,6 +104,24 @@ Project.init(
     {
         sequelize,
         tableName: "projects",
+        hooks: {
+            beforeSave: (project: Project) => {
+                const goal = Number(project.goal_amount);
+                const current = Number(project.current_amount);
+
+                if (goal > 0) {
+                    const percentage = (current / goal) * 100;
+                    project.progress = Math.min(Math.round(percentage), 100);
+                }else {
+                    project.progress = 0;
+                }
+            },
+            beforeUpdate: (project: Project) => {
+                if (project.changed('slug')) {
+                    throw new Error("No se puede editar el slug del proyecto");
+                }
+            }
+        }
     }
 );
 

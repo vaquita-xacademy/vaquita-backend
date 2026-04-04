@@ -7,12 +7,15 @@ import { ProjectService } from "./project.service";
 import { Request, Response } from "express";
 import { ProjectResource } from "./resource/project.resource";
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
+import { IdParamDTO, SlugParamDTO} from "./dto/project-param.dto";
+import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 export class ProjectController {
     private projectService: ProjectService;
 
     constructor() {
-        this.projectService = new ProjectService();
+        const budgetItemsService = new BudgetItemsService();
+        this.projectService = new ProjectService(budgetItemsService);
     }
 
     public create = async (request: Request, response: Response) => {
@@ -21,7 +24,7 @@ export class ProjectController {
             const body = request.body as CreateProjectDTO;
 
             const project = await this.projectService.create(user.id, body);
-
+            
             return success(response, { project: ProjectResource.toResponse(project) }, 201);
         } catch (error: any) {
             const statusCode = error.status ?? 500;
@@ -44,6 +47,10 @@ export class ProjectController {
     public getBySlug = async (request: Request, response: Response) => {
         try {
             const slug = request.params.slug as string;
+    /*public findBySlug = async (request: Request, response: Response) => {
+        try {
+            const params = response.locals.params as SlugParamDTO;
+            const slug = params.slug;*/
             const project = await this.projectService.findBySlug(slug);
 
             return success(response, { project: ProjectResource.toResponse(project) }, 200);
@@ -63,6 +70,7 @@ export class ProjectController {
         } catch (error: any) {
             const statusCode = error.status ?? 500;
             return errorResponse(response, error.message, statusCode);
+            return errorResponse(response, error.message, error.statusCode ?? 500);
         }
     };
 
@@ -77,6 +85,18 @@ export class ProjectController {
             return success(response, { project: ProjectResource.toResponse(project) }, 200);
         } catch (error: any) {
             const statusCode = error.status ?? 500;
+
+            const { id } = response.locals.params as IdParamDTO;
+            const user = request.user as User; 
+            request.body.id = id; 
+
+            const body = request.body as UpdateProjectDTO;
+            
+            const project = await this.projectService.update(id, user.id, user.role, body);
+            
+            return success(response, { project: ProjectResource.toResponse(project) }, 200);
+        } catch (error: any) {
+            const statusCode = error.statusCode ?? 500;
             return errorResponse(response, error.message, statusCode);
         }
     };
@@ -92,6 +112,20 @@ export class ProjectController {
             return success(response, { project: { id: project.id, status: project.status } }, 200);
         } catch (error: any) {
             const statusCode = error.status ?? 500;
+            return errorResponse(response, error.message, statusCode);
+        }
+    };
+    
+    public delete = async (request: Request, response: Response) => {
+        try {
+            const { id } = response.locals.params as IdParamDTO;
+            const user = request.user as User;
+
+            await this.projectService.delete(id, user.id, user.role);
+
+            return success(response, { message: "Proyecto eliminado exitosamente" }, 200);
+        } catch (error: any) {
+            const statusCode = error.statusCode ?? 500;
             return errorResponse(response, error.message, statusCode);
         }
     };
