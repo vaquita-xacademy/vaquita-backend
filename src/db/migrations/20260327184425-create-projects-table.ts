@@ -34,6 +34,11 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
+      progress: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -51,7 +56,7 @@ module.exports = {
         defaultValue: ProjectStatus.ACTIVE
       },
       slug: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING(200),
         allowNull: false,
         unique: true,
       },
@@ -71,13 +76,26 @@ module.exports = {
       }
     });
 
+    await queryInterface.addIndex("projects", ["title"], {
+      name: "projects_title_active_unique",
+      unique: true,
+      where: { status: ProjectStatus.ACTIVE,},
+    });
+
     await queryInterface.addIndex("projects", ["location"],{
       using: "GIN",
       name: "idx_projects_location",
       operator: "jsonb_path_ops"
     })
+
+    await queryInterface.addIndex("projects", ["progress", "status"], {
+      name: "idx_projects_progress_status",
+    })
   },
   async down (queryInterface: QueryInterface) {
+    await queryInterface.removeIndex("projects", "projects_title_active_unique");
+    await queryInterface.removeIndex("projects", "idx_projects_progress_status");
+    await queryInterface.removeIndex("projects", "idx_projects_location");
     await queryInterface.dropTable("projects");
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_projects_status"');
   }

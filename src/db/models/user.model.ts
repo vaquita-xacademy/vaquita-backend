@@ -24,7 +24,7 @@ User.init(
             allowNull: false,
         },
         password_hash: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.TEXT,
             allowNull: false,
         },
         role: {

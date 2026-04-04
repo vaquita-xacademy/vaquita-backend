@@ -26,7 +26,7 @@ VerifiedProfile.init(
             allowNull: false,
         },
         document_url: {
-            type: DataTypes.STRING(200),
+            type: DataTypes.TEXT,
             allowNull: false,
         },
         status: {
@@ -41,7 +41,8 @@ VerifiedProfile.init(
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            references: { model: "users" },
+            unique: true,
+            references: { model: "users", key: "id" },
             onUpdate: "CASCADE",
             onDelete: "RESTRICT",
         },

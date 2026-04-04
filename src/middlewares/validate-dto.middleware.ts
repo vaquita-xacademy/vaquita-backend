@@ -36,3 +36,17 @@ export const validateQuery = (dto: any) =>
         res.locals.query = instance;
         next();
     };
+
+export const validateParams = (dto: any) =>
+    async (req: Request, res: Response, next: NextFunction) => {
+        const instance = plainToInstance(dto, req.params, {
+            enableImplicitConversion: true
+        }) as object;
+
+        const errors = await validate(instance);
+
+        if (errors.length > 0)
+            return validationErrorResponse(res, formatErrors(errors));
+        res.locals.params = instance;
+        next();
+    };
