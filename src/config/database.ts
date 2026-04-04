@@ -1,6 +1,13 @@
-require("dotenv").config();
+import { Options } from "sequelize";
+import * as dotenv from "dotenv";
 
-const sharedConfig = {
+dotenv.config();
+
+interface DBConfig extends Options {
+  use_env_variable?: string;
+}
+
+const sharedConfig: Options = {
   dialect: "postgres",
   host: process.env.DB_HOST || "localhost",
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
@@ -15,7 +22,7 @@ const sharedConfig = {
   },
 };
 
-const productionConfig = {
+const productionConfig: DBConfig = {
   ...sharedConfig,
   database: process.env.DB_NAME || "vaquita_db",
 };
@@ -33,7 +40,7 @@ if (process.env.DB_SSL === "true") {
   };
 }
 
-module.exports = {
+const config: { [key: string]: DBConfig } = {
   development: {
     ...sharedConfig,
     database: process.env.DB_NAME || "vaquita_db",
@@ -44,3 +51,5 @@ module.exports = {
   },
   production: productionConfig,
 };
+
+export default config;
