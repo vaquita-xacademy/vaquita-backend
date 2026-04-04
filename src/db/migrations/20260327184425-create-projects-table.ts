@@ -76,6 +76,12 @@ module.exports = {
       }
     });
 
+    await queryInterface.addIndex("projects", ["title"], {
+      name: "projects_title_active_unique",
+      unique: true,
+      where: { status: ProjectStatus.ACTIVE,},
+    });
+
     await queryInterface.addIndex("projects", ["location"],{
       using: "GIN",
       name: "idx_projects_location",
@@ -87,6 +93,9 @@ module.exports = {
     })
   },
   async down (queryInterface: QueryInterface) {
+    await queryInterface.removeIndex("projects", "projects_title_active_unique");
+    await queryInterface.removeIndex("projects", "idx_projects_progress_status");
+    await queryInterface.removeIndex("projects", "idx_projects_location");
     await queryInterface.dropTable("projects");
     await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_projects_status"');
   }
