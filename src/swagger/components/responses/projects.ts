@@ -74,4 +74,19 @@ export default {
             },
         }
     },
+    ListMineProjectsSuccessResponse: {
+        description: "Mis proyectos",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/ListMineProjectsSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }
