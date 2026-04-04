@@ -93,6 +93,54 @@ export default {
             }
         },
     },
+    ListMineProjectsSuccessExample: {
+        summary: "Mis proyectos obtenidos exitosamente",
+        value: {
+            data: {
+                projects: [
+                    {
+                        id: 1,
+                        owner_id: { id: 3, name: "Jimena" },
+                        category: "Ecología",
+                        title: "Huerta Comunitaria Sur",
+                        progress: 50,
+                        image_url: "https://example.com/image.jpg",
+                        status: "active",
+                        slug: "huerta-comunitaria-sur-482",
+                        location: {
+                            province: "Buenos Aires",
+                            city: "La Plata",
+                        },
+                        created_at: "2025-12-17T17:00:00Z",
+                        updated_at: "2025-12-17T17:00:00Z",
+                    },
+                    {
+                        id: 2,
+                        owner_id: { id: 3, name: "Jimena" },
+                        category: "Educación",
+                        title: "Apoyo Escolar",
+                        progress: 85,
+                        image_url: "https://example.com/image2.jpg",
+                        status: "active",
+                        slug: "apoyo-escolar-222",
+                        location: {
+                            province: "La Pampa",
+                            city: "Santa Rosa",
+                        },
+                        created_at: "2025-12-17T17:00:00Z",
+                        updated_at: "2025-12-17T17:00:00Z",
+                    },
+                ],
+                total_count: 2,
+                paginate_info: {
+                    has_next: false,
+                    has_previous: false,
+                    next_cursor: null,
+                    prev_cursor: null,
+                },
+            },
+        },
+    },
     ProjectBySlugSuccessExample: {
         summary: "Proyecto obtenido exitosamente",
         value: {
@@ -165,59 +213,23 @@ export default {
             }
         },
     },
+    UpdateProjectStatusSuccessExample: {
+        summary: "Estado del proyecto actualizado exitosamente",
+        value: {
+            data: {
+                project: {
+                    id: 1,
+                    status: "paused",
+                }
+            }
+        },
+    },
     DeleteProjectSuccessExample: {
         summary: "Proyecto eliminado exitosamente",
         value: {
             data: {
+                status: true,
                 message: "Proyecto eliminado exitosamente",
-            },
-        },
-    },
-    ListMineProjectsSuccessExample: {
-        summary: "Mis proyectos obtenidos exitosamente",
-        value: {
-            data: {
-                projects: [
-                    {
-                        id: 1,
-                        owner_id: { id: 3, name: "Jimena" },
-                        category: "Ecología",
-                        title: "Huerta Comunitaria Sur",
-                        progress: 50,
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "huerta-comunitaria-sur-482",
-                        location: {
-                            province: "Buenos Aires",
-                            city: "La Plata",
-                        },
-                        created_at: "2025-12-17T17:00:00Z",
-                        updated_at: "2025-12-17T17:00:00Z",
-                    },
-                    {
-                        id: 2,
-                        owner_id: { id: 3, name: "Jimena" },
-                        category: "Educación",
-                        title: "Apoyo Escolar",
-                        progress: 85,
-                        image_url: "https://example.com/image2.jpg",
-                        status: "active",
-                        slug: "apoyo-escolar-222",
-                        location: {
-                            province: "La Pampa",
-                            city: "Santa Rosa",
-                        },
-                        created_at: "2025-12-17T17:00:00Z",
-                        updated_at: "2025-12-17T17:00:00Z",
-                    },
-                ],
-                total_count: 2,
-                paginate_info: {
-                    has_next: false,
-                    has_previous: false,
-                    next_cursor: null,
-                    prev_cursor: null,
-                },
             },
         },
     },

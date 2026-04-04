@@ -1,5 +1,5 @@
-import { Project, User } from "../../../db/models";
 import { BudgetItemsResource } from "../../budget-items/resource/budget-items.resource";
+import { Project, User } from "../../../db/models";
 
 export class ProjectResource {
     static toResponse(project: Project) {
@@ -26,7 +26,6 @@ export class ProjectResource {
     }
 
     static toCard(project: Project) {
-        const owner = project.get("owner") as User | undefined;
         return {
             id: project.id,
             title: project.title,
@@ -38,7 +37,8 @@ export class ProjectResource {
                 city: project.location.city,
             },
             category: project.category_data ? project.category_data.name : null,
-            owner: owner ? { id: owner.id, name: owner.name } : null,
+            owner: project.owner ? { id: project.owner.id, name: project.owner.name } : null,
+            progress: Number(project.progress),
             created_at: project.created_at,
             updated_at: project.updated_at,
         };

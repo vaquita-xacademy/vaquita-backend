@@ -89,4 +89,19 @@ export default {
             },
         }
     },
+    UpdateProjectStatusSuccessResponse: {
+        description: "Estado del proyecto actualizado exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/UpdateProjectStatusSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }

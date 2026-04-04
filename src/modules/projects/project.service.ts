@@ -133,7 +133,7 @@ export class ProjectService {
         const paginated = toPaginate<Project>(result);
         return {
             ...paginated,
-            items: paginated.items.map(ProjectResource.toResponse),
+            items: paginated.items.map(ProjectResource.toCard),
         };
     }
 
@@ -186,7 +186,7 @@ export class ProjectService {
         if (!project) throw new NotFoundException("Proyecto no encontrado");
 
         if (userRole !== UserRole.ADMIN && project.owner_id !== userId)
-            throw new ForbiddenException("No tienes permiso para editar este proyecto");
+            throw new ForbiddenException("No tienes permiso para eliminar este proyecto");
 
         if (project.status === ProjectStatus.COMPLETED)
             throw new ForbiddenException("Los proyectos completados no pueden eliminarse.");

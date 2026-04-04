@@ -325,6 +325,55 @@ export default {
             },
         },
     },
-
+    "/api/v1/projects/{id}/status": {
+        patch: {
+            summary: "Actualizar el estado de un proyecto",
+            description: "Endpoint para actualizar el estado de un proyecto existente identificado por su ID. Solo el owner o un administrador pueden realizar esta acción.",
+            tags: ["Projects"],
+            security: [{ cookieAuth: [] }],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: {
+                        type: "integer",
+                        description: "ID del proyecto.",
+                        example: 1
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            $ref: "#/components/schemas/UpdateProjectStatusRequestSchema",
+                        },
+                    },
+                },
+            },
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/UpdateProjectStatusSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "401": {
+                    $ref: "#/components/responses/UnauthorizedResponse"
+                },
+                "403": {
+                    $ref: "#/components/responses/ForbiddenResponse"
+                },
+                "404": {
+                    $ref: "#/components/responses/ModelNotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+    },
 }
 
