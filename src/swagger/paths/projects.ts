@@ -87,6 +87,24 @@ export default {
             },
         },
     },
+    "/api/v1/projects/featured": {
+        get: {
+            summary: "Proyectos destacados",
+            description: "Endpoint para listar los 3 proyectos más destacados",
+            tags: ["Projects"],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/ListFeaturedProjectsSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+    },
     "/api/v1/projects/{slug}": {
         get: {
             summary: "Obtener un proyecto por slug",

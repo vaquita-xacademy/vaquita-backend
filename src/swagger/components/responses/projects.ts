@@ -104,4 +104,19 @@ export default {
             },
         }
     },
+    ListFeaturedProjectsSuccessResponse: {
+        description: "Proyectos destacados",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/ListFeaturedProjectsSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }

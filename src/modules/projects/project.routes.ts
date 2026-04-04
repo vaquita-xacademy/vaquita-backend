@@ -28,6 +28,11 @@ router.get(
 );
 
 router.get(
+    "/featured",
+    projectController.listFeatured
+);
+
+router.get(
     "/:slug",
     validateParams(SlugParamDTO),
     projectController.getBySlug

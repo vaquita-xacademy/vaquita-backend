@@ -221,4 +221,28 @@ export class ProjectService {
         
         if (projectExists) throw new ConflictException("Ya existe un proyecto activo con este nombre");
     }
+
+    public async listFeatured() {
+        const include = [
+            { model: Category, as: "category_data", attributes: ["id", "name"] },
+            { model: User, as: "owner", attributes: ["id", "name"] },
+        ];
+        
+        const where: WhereOptions = {
+            status: ProjectStatus.ACTIVE,
+        };
+
+        const projects = await Project.findAll({
+            where,
+            include,
+            order: [['progress', 'DESC'], ['current_amount', 'DESC']], 
+            limit: 3,
+            attributes: Project.attributes,
+        });
+
+        return {
+            items: projects.map(ProjectResource.toCard),
+        };
+
+    }
 }

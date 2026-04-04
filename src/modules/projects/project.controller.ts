@@ -113,4 +113,14 @@ export class ProjectController {
             return errorResponse(response, error.message, statusCode);
         }
     };
+
+    public listFeatured = async (request: Request, response: Response) => {
+        try {
+            const projects = await this.projectService.listFeatured();
+            return success(response, { projects }, 200);
+        } catch (error: any) {
+            const statusCode = error.statusCode ?? 500;
+            return errorResponse(response, error.message, statusCode);
+        }
+    };
 }
