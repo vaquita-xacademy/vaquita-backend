@@ -46,11 +46,8 @@ export class ProjectController {
 
     public getBySlug = async (request: Request, response: Response) => {
         try {
-            const slug = request.params.slug as string;
-    /*public findBySlug = async (request: Request, response: Response) => {
-        try {
             const params = response.locals.params as SlugParamDTO;
-            const slug = params.slug;*/
+            const slug = params.slug;
             const project = await this.projectService.findBySlug(slug);
 
             return success(response, { project: ProjectResource.toResponse(project) }, 200);
@@ -70,33 +67,20 @@ export class ProjectController {
         } catch (error: any) {
             const statusCode = error.status ?? 500;
             return errorResponse(response, error.message, statusCode);
-            return errorResponse(response, error.message, error.statusCode ?? 500);
         }
     };
 
     public update = async (request: Request, response: Response) => {
         try {
             const user = request.user as User;
-            const projectId = parseInt(request.params.id as string, 10);
+            const { id } = response.locals.params as IdParamDTO;
             const body = request.body as UpdateProjectDTO;
 
-            const project = await this.projectService.update(projectId, user.id, user.role, body);
+            const project = await this.projectService.update(id, user.id, user.role, body);
 
             return success(response, { project: ProjectResource.toResponse(project) }, 200);
         } catch (error: any) {
             const statusCode = error.status ?? 500;
-
-            const { id } = response.locals.params as IdParamDTO;
-            const user = request.user as User; 
-            request.body.id = id; 
-
-            const body = request.body as UpdateProjectDTO;
-            
-            const project = await this.projectService.update(id, user.id, user.role, body);
-            
-            return success(response, { project: ProjectResource.toResponse(project) }, 200);
-        } catch (error: any) {
-            const statusCode = error.statusCode ?? 500;
             return errorResponse(response, error.message, statusCode);
         }
     };
@@ -115,7 +99,7 @@ export class ProjectController {
             return errorResponse(response, error.message, statusCode);
         }
     };
-    
+
     public delete = async (request: Request, response: Response) => {
         try {
             const { id } = response.locals.params as IdParamDTO;

@@ -9,7 +9,7 @@ import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
 import { ProjectResource } from "./resource/project.resource";
 import { Op, Order, WhereOptions } from "sequelize";
-import { ProjectRules } from "./rules/project.rules";
+import { ensureNoDonations} from "./rules/project.rules";
 import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 export class ProjectService {
@@ -93,9 +93,11 @@ export class ProjectService {
         const project = await Project.findOne({
             where: { slug },
             include: [
-                { model: Category, as: "category_data" },
-                { model: User, as: "owner", attributes: ["id", "name"] },
+                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "amount"]},
+                { model: Category, as: "category_data", attributes: ["id", "name"], },
+                { model: User, as: "owner", attributes: ["id", "name"], },
             ],
+            attributes: Project.attributes,
         });
 
         if (!project) {
@@ -181,70 +183,18 @@ export class ProjectService {
         }
     }
 
-    public async findBySlug(slug: string) {
-        const project = await Project.findOne({
-            where: {
-                slug: slug
-            },
-            include: [
-                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "amount"]},
-                { model: Category, as: "category_data", attributes: ["id", "name"], },
-                { model: User, as: "owner", attributes: ["id", "name"], },
-            ],
-            attributes: Project.attributes,
-        });
-
-        if (!project) {
-            throw new NotFoundException("Proyecto no encontrado");
-        }
-
-        return project;
-    }
-
-    public async update(id: number, userId: number, userRole: UserRole, dto: UpdateProjectDTO) {
-        const projectUpdate = await sequelize.transaction(async (transaction) => {
-            const project = await Project.findByPk(id, {transaction});
-
-            if (!project) throw new NotFoundException("Proyecto no encontrado");
-
-            if (userRole !== UserRole.ADMIN && project.owner_id !== userId)
-                throw new ForbiddenException("No tienes permiso para editar este proyecto");
-
-            if (dto.goal_amount !== undefined)
-                ProjectRules.ensureCanUpdateGoal(project.current_amount, dto.goal_amount);
-            
-            await project.update(dto, { transaction });
-
-            if (dto.budget_items) {
-                await this.budgetItemsService.sync(project.id, dto.budget_items, transaction);
-            }
-
-            return await project.reload({
-                include: [
-                    {model: Category, as: 'category_data'}, 
-                    {model: BudgetItem, as: 'budget_items'}, 
-                    {model: User, as: 'owner', attributes: ["id", "name"]},
-                ],transaction
-            });
-        });
-
-        return projectUpdate;
-    }
-
     public async delete(id: number, userId: number, userRole: UserRole) {
         const project = await Project.findByPk(id);
 
         if (!project) throw new NotFoundException("Proyecto no encontrado");
 
-        if (userRole !== UserRole.ADMIN && project.owner_id !== userId){
+        if (userRole !== UserRole.ADMIN && project.owner_id !== userId)
             throw new ForbiddenException("No tienes permiso para editar este proyecto");
-        }
 
-        if (project.status === ProjectStatus.COMPLETED) {
+        if (project.status === ProjectStatus.COMPLETED)
             throw new ForbiddenException("Los proyectos completados no pueden eliminarse.");
-        }
 
-        ProjectRules.ensureNoDonations(project.current_amount);
+        ensureNoDonations(project.current_amount);
 
         await project.destroy();
         return true;
