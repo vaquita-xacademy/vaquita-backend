@@ -53,7 +53,6 @@ export default {
         summary: "Logout exitoso",
         value: {
             data: {
-                status: true,
                 message: "Logout exitoso",
             }
         },
