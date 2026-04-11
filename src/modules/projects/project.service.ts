@@ -1,30 +1,26 @@
 import { CreateProjectDTO } from "./dto/create-project.dto";
 import { UpdateProjectDTO } from "./dto/update-project.dto";
-import { InternalServerErrorException, ForbiddenException, NotFoundException, ConflictException } from "../../exceptions";
+import { InternalServerErrorException, ForbiddenException, NotFoundException } from "../../exceptions";
 import { sequelize } from "../../db/sequelize";
-import { BudgetItem, Category, Project, User } from "../../db/models";
+import { Category, Project, User } from "../../db/models";
 import { ProjectStatus, SortOptions, UserRole } from "../../types/enums";
 import slugify from "slugify";
 import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
+import { Order, WhereOptions } from "sequelize";
+import { Op } from "sequelize";
 import { ProjectResource } from "./resource/project.resource";
-import { Op, Order, Transaction, WhereOptions } from "sequelize";
-import { ensureNoDonations} from "./rules/project.rules";
-import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 export class ProjectService {
-    constructor(private readonly budgetItemsService: BudgetItemsService ) {}
-
     public async create(userId: number, dto: CreateProjectDTO) {
-        
         return sequelize.transaction(async (transaction) => {
-            await this.validateUniqueTitle(dto.title, undefined, transaction);
             const slug = slugify(dto.title, { lower: true, strict: true });
             const uniqueSlug = `${slug}-${Math.floor(Math.random() * 1000)}`;
 
             const projectCreated = await Project.create(
                 {
                     owner_id: userId,
+                    organization_id: dto.organization_id ?? null,
                     category_id: dto.category_id,
                     title: dto.title,
                     description: dto.description,

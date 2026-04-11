@@ -44,8 +44,8 @@ export class CreateProjectDTO {
     @IsUrl({}, { message: errorMessage.invalid_format })
     image_url!: string;
 
-    @IsArray({ message: errorMessage.invalid_format })
-    @ValidateNested({ each: true })
-    @Type(() => CreateBudgetItemDto)
-    budget_items?: CreateBudgetItemDto[];
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber({}, { message: errorMessage.numeric })
+    organization_id?: number;
 }

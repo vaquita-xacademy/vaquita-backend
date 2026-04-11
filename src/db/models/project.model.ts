@@ -14,6 +14,7 @@ export interface Location {
 export class Project extends Model {
     public id!: number;
     public owner_id!: number;
+    public organization_id!: number | null;
     public category_id!: number;
     public title!: string;
     public description!: string;
@@ -90,6 +91,13 @@ Project.init(
             type: DataTypes.ENUM(...Object.values(ProjectStatus)),
             allowNull: false,
             defaultValue: ProjectStatus.ACTIVE
+        },
+        organization_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: { model: "organizations", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL",
         },
         slug: {
             type: DataTypes.STRING(200),

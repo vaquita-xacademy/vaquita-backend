@@ -1,276 +1,83 @@
+const projectDetail = {
+    id: 1,
+    owner_id: 3,
+    organization_id: null,
+    category: "Ecología",
+    title: "Huerta Comunitaria Sur",
+    description: "Proyecto para crear una huerta comunitaria en el barrio sur de La Plata.",
+    goal_amount: 150000,
+    current_amount: 0,
+    image_url: "https://example.com/imagen.jpg",
+    status: "active",
+    slug: "huerta-comunitaria-sur-482",
+    location: { province: "Buenos Aires", city: "La Plata" },
+    created_at: "2026-04-02T00:00:00.000Z",
+    updated_at: "2026-04-02T00:00:00.000Z",
+};
+
+const projectCard = {
+    id: 1,
+    title: "Huerta Comunitaria Sur",
+    image_url: "https://example.com/imagen.jpg",
+    status: "active",
+    slug: "huerta-comunitaria-sur-482",
+    location: { province: "Buenos Aires", city: "La Plata" },
+    category: "Ecología",
+    owner: { id: 3, name: "Jimena" },
+    created_at: "2026-04-02T00:00:00.000Z",
+    updated_at: "2026-04-02T00:00:00.000Z",
+};
+
+const paginateInfo = {
+    has_next: false,
+    has_previous: false,
+    next_cursor: null,
+    prev_cursor: null,
+};
+
 export default {
     CreateProjectSuccessExample: {
         summary: "Proyecto creado exitosamente",
-        value: {
-            data: {
-                project: {
-                    id: 1,
-                    owner_id: 1,
-                    category: "Categoria 1",
-                    title: "Proyecto 1",
-                    description: "Descripción del proyecto 1",
-                    goal_amount: 1000,
-                    current_amount: 0,
-                    progress: 0,
-                    image_url: "https://example.com/image.jpg",
-                    status: "active",
-                    slug: "proyecto-1-111",
-                    location: {
-                        province: "Entre Ríos",
-                        city: "Concordia",
-                    },
-                    budget_items: [
-                        {
-                            name: "Materiales de construcción",
-                            amount: 100,
-                        },
-                        {
-                            name: "Mano de obra",
-                            amount: 200,
-                        },
-                    ],
-                    created_at: "2025-12-17T17:00:00Z",
-                    updated_at: "2025-12-17T17:00:00Z",
-                }
-            }
-        },
+        value: { data: { project: projectDetail } },
     },
+
     ListPaginateProjectsSuccessExample: {
         summary: "Proyectos listados exitosamente",
         value: {
             data: {
                 items: [
-                    {
-                        id: 5,
-                        title: "Otro proyecto 6",
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "otro-proyecto-6-525",
-                        location: {
-                            city: "Capital",
-                            province: "Cordoba"
-                        },
-                        created_at: "2026-03-31T22:07:09.019Z",
-                        updated_at: "2026-03-31T22:07:09.019Z",
-                        category_data: {
-                            id: 4,
-                            name: "Animales"
-                        },
-                        owner: {
-                            id: 2,
-                            name: "Nahuel"
-                        }
-                    },
-                    {
-                        id: 4,
-                        title: "Otro proyecto 5",
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "otro-proyecto-5-481",
-                        location: {
-                            city: "Capital",
-                            province: "Cordoba"
-                        },
-                        created_at: "2026-03-31T22:07:00.439Z",
-                        updated_at: "2026-03-31T22:07:00.439Z",
-                        category_data: {
-                            id: 1,
-                            name: "Ecología"
-                        },
-                        owner: {
-                            id: 2,
-                            name: "Nahuel"
-                        }
-                    }
-                ],
-                total_count: 5,
-                paginate_info: {
-                    has_next: true,
-                    has_previous: false,
-                    next_cursor: "WyIyMDI2LTAzLTMxVDIyOjA3OjAwLjQzOVoiLDRd",
-                    prev_cursor: null
-                }
-            }
-        },
-    },
-    ListMineProjectsSuccessExample: {
-        summary: "Mis proyectos obtenidos exitosamente",
-        value: {
-            data: {
-                projects: [
-                    {
-                        id: 1,
-                        owner_id: { id: 3, name: "Jimena" },
-                        category: "Ecología",
-                        title: "Huerta Comunitaria Sur",
-                        progress: 50,
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "huerta-comunitaria-sur-482",
-                        location: {
-                            province: "Buenos Aires",
-                            city: "La Plata",
-                        },
-                        created_at: "2025-12-17T17:00:00Z",
-                        updated_at: "2025-12-17T17:00:00Z",
-                    },
-                    {
-                        id: 2,
-                        owner_id: { id: 3, name: "Jimena" },
-                        category: "Educación",
-                        title: "Apoyo Escolar",
-                        progress: 85,
-                        image_url: "https://example.com/image2.jpg",
-                        status: "active",
-                        slug: "apoyo-escolar-222",
-                        location: {
-                            province: "La Pampa",
-                            city: "Santa Rosa",
-                        },
-                        created_at: "2025-12-17T17:00:00Z",
-                        updated_at: "2025-12-17T17:00:00Z",
-                    },
+                    projectCard,
+                    { ...projectCard, id: 2, title: "Comedor Barrial Norte", slug: "comedor-barrial-norte-317", category: "Comunidad" },
                 ],
                 total_count: 2,
-                paginate_info: {
-                    has_next: false,
-                    has_previous: false,
-                    next_cursor: null,
-                    prev_cursor: null,
-                },
+                paginate_info: paginateInfo,
             },
         },
     },
-    ProjectBySlugSuccessExample: {
-        summary: "Proyecto obtenido exitosamente",
+
+    GetProjectBySlugSuccessExample: {
+        summary: "Detalle del proyecto por slug",
+        value: { data: { project: projectDetail } },
+    },
+
+    ListMineProjectsSuccessExample: {
+        summary: "Mis proyectos",
         value: {
             data: {
-                project: {
-                    id: 1,
-                    owner_id: 1,
-                    category: "Comunidad",
-                    title: "Huerta Comunitaria",
-                    description: "Proyecto para crear una huerta comunitaria para abastecer de alimentos frescos a los vecinos de la zona.",
-                    goal_amount: 1000,
-                    current_amount: 0,
-                    progress: 0,
-                    image_url: "https://example.com/image.jpg",
-                    status: "active",
-                    slug: "huerta-comunitaria-111",
-                    location: {
-                        province: "Entre Ríos",
-                        city: "Concordia",
-                    },
-                    budget_items: [
-                        {
-                            name: "Materiales: Ladrillos, cemento, arena, etc.",
-                            amount: 100,
-                        },
-                        {
-                            name: "Mano de obra: Albañiles, electricistas, etc.",
-                            amount: 200,
-                        },
-                    ],
-                    created_at: "2025-12-17T17:00:00Z",
-                    updated_at: "2025-12-17T17:00:00Z",
-                }
-            }
+                items: [projectDetail],
+                total_count: 1,
+                paginate_info: paginateInfo,
+            },
         },
     },
+
     UpdateProjectSuccessExample: {
-        summary: "Proyecto actualizado exitosamente",
-        value: {
-            data: {
-                project: {
-                    id: 1,
-                    owner_id: 1,
-                    category: "Comunidad",
-                    title: "Huerta Comunitaria",
-                    description: "Proyecto para crear una huerta comunitaria para abastecer de alimentos frescos a los vecinos de la zona.",
-                    goal_amount: 1000,
-                    current_amount: 0,
-                    progress: 0,
-                    image_url: "https://example.com/image.jpg",
-                    status: "active",
-                    slug: "huerta-comunitaria-111",
-                    location: {
-                        province: "Entre Ríos",
-                        city: "Concordia",
-                    },
-                    budget_items: [
-                        {
-                            name: "Materiales: Ladrillos, cemento, arena, etc.",
-                            amount: 100,
-                        },
-                        {
-                            name: "Mano de obra: Albañiles, electricistas, etc.",
-                            amount: 200,
-                        },
-                    ],
-                    created_at: "2025-12-17T17:00:00Z",
-                    updated_at: "2025-12-17T17:00:00Z",
-                }
-            }
-        },
+        summary: "Proyecto actualizado",
+        value: { data: { project: { ...projectDetail, title: "Huerta Comunitaria Sur — Temporada 2026" } } },
     },
+
     UpdateProjectStatusSuccessExample: {
-        summary: "Estado del proyecto actualizado exitosamente",
-        value: {
-            data: {
-                project: {
-                    id: 1,
-                    status: "paused",
-                }
-            }
-        },
-    },
-    DeleteProjectSuccessExample: {
-        summary: "Proyecto eliminado exitosamente",
-        value: {
-            data: {
-                message: "Proyecto eliminado exitosamente",
-            },
-        },
-    },
-    ListFeaturedProjectsSuccessExample: {
-        summary: "Proyectos destacados obtenidos exitosamente",
-        value: {
-            data: {
-                projects: [
-                    {
-                        id: 1,
-                        owner_id: { id: 3, name: "Jimena" },
-                        category: "Ecología",
-                        title: "Huerta Comunitaria Sur",
-                        progress: 50,
-                        image_url: "https://example.com/image.jpg",
-                        status: "active",
-                        slug: "huerta-comunitaria-sur-482",
-                        location: {
-                            province: "Buenos Aires",
-                            city: "La Plata",
-                        },
-                        created_at: "2025-12-17T17:00:00Z",
-                        updated_at: "2025-12-17T17:00:00Z",
-                    },
-                    {
-                        id: 2,
-                        owner_id: { id: 3, name: "Jimena" },
-                        category: "Educación",
-                        title: "Apoyo Escolar",
-                        progress: 85,
-                        image_url: "https://example.com/image2.jpg",
-                        status: "active",
-                        slug: "apoyo-escolar-222",
-                        location: {
-                            province: "La Pampa",
-                            city: "Santa Rosa",
-                        },
-                        created_at: "2025-12-17T17:00:00Z",
-                        updated_at: "2025-12-17T17:00:00Z",
-                    },
-                ],
-            },
-        },
+        summary: "Estado del proyecto actualizado",
+        value: { data: { project: { id: 1, status: "paused" } } },
     },
 }
