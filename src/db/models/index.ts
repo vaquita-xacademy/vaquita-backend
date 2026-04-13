@@ -4,26 +4,12 @@ import Category from "./category.model";
 import Project from "./project.model";
 import User from "./user.model";
 import VerifiedProfile from "./verified-profile.model";
-import Organization from "./organization.model";
-import OrganizationVerifiedProfile from "./organization-verified-profile.model";
 import Donation from "./donation.model";
 
 export function setupAssociations() {
   // User ↔ VerifiedProfile (1:1)
   User.hasOne(VerifiedProfile, { foreignKey: "user_id", as: "verified_profile" });
   VerifiedProfile.belongsTo(User, { foreignKey: "user_id", as: "user" });
-
-  // User ↔ Organization (1:N)
-  User.hasMany(Organization, { foreignKey: "owner_id", as: "organizations" });
-  Organization.belongsTo(User, { foreignKey: "owner_id", as: "owner" });
-
-  // Organization ↔ OrganizationVerifiedProfile (1:1)
-  Organization.hasOne(OrganizationVerifiedProfile, { foreignKey: "organization_id", as: "verified_profile" });
-  OrganizationVerifiedProfile.belongsTo(Organization, { foreignKey: "organization_id", as: "organization" });
-
-  // Organization ↔ Project (1:N)
-  Organization.hasMany(Project, { foreignKey: "organization_id", as: "projects" });
-  Project.belongsTo(Organization, { foreignKey: "organization_id", as: "organization" });
 
   // User ↔ Project (1:N)
   User.hasMany(Project, { foreignKey: "owner_id", as: "projects" });
@@ -40,6 +26,9 @@ export function setupAssociations() {
   // Project ↔ Donation (1:N)
   Project.hasMany(Donation, { foreignKey: "project_id", as: "donations" });
   Donation.belongsTo(Project, { foreignKey: "project_id", as: "project" });
+
+  Project.hasMany(BudgetItem, { foreignKey: "project_id", as: "budget_items" });
+  BudgetItem.belongsTo(Project, { foreignKey: "project_id", as: "project" });
 }
 
 export {
@@ -48,7 +37,6 @@ export {
   VerifiedProfile,
   Project,
   Category,
-  Organization,
-  OrganizationVerifiedProfile,
   Donation,
+  BudgetItem,
 };
