@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ProjectController } from "./project.controller";
-import { validateDto, validateQuery } from "../../middlewares/validate-dto.middleware";
+import { validateDto, validateParams, validateQuery } from "../../middlewares/validate-dto.middleware";
 import { CreateProjectDTO } from "./dto/create-project.dto";
 import { UpdateProjectDTO } from "./dto/update-project.dto";
 import { UpdateProjectStatusDTO } from "./dto/update-project-status.dto";
@@ -8,6 +8,7 @@ import { authenticateJwt } from "../../middlewares/authenticate.middleware";
 import { authorizeProfile } from "../../middlewares/authorize-profile.middleware";
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
 import { DonationController } from "../donations/donation.controller";
+import { IdParamDTO, SlugParamDTO } from "./dto/project-param.dto";
 
 const router = Router();
 const projectController = new ProjectController();
