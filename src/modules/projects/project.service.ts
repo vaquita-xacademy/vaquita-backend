@@ -9,7 +9,7 @@ import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
 import { ProjectResource } from "./resource/project.resource";
 import { Op, Order, Transaction, WhereOptions } from "sequelize";
-import { ensureNoDonations} from "./rules/project.rules";
+import { ensureCanUpdateGoal, ensureNoDonations} from "./rules/project.rules";
 import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 export class ProjectService {
@@ -17,6 +17,8 @@ export class ProjectService {
 
     public async create(userId: number, dto: CreateProjectDTO) {
         
+        if (dto.budget_items) this.budgetItemsService.validateUniqueNames(dto.budget_items);
+
         return sequelize.transaction(async (transaction) => {
             await this.validateUniqueTitle(dto.title, undefined, transaction);
             const slug = slugify(dto.title, { lower: true, strict: true });
@@ -43,10 +45,6 @@ export class ProjectService {
                     transaction
                 }
             );
-
-            if (!projectCreated) {
-                throw new InternalServerErrorException("No se pudo recuperar el proyecto creado");
-            }
 
             await projectCreated.reload({
                 include: [
@@ -95,7 +93,7 @@ export class ProjectService {
         const project = await Project.findOne({
             where: { slug },
             include: [
-                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "amount"]},
+                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "quantity"]},
                 { model: Category, as: "category_data", attributes: ["id", "name"], },
                 { model: User, as: "owner", attributes: ["id", "name"], },
             ],
@@ -146,13 +144,19 @@ export class ProjectService {
             throw new ForbiddenException("No tienes permiso para editar este proyecto");
         }
 
-        if (dto.title && dto.title !== project.title) {
+        if (dto.title && dto.title !== project.title)
             await this.validateUniqueTitle(dto.title, projectId);
-        }
+
+        if (dto.goal_amount !== undefined)
+            ensureCanUpdateGoal(project.current_amount, dto.goal_amount);
 
         const projectUpdate = await sequelize.transaction(async (transaction) => {
-            await project.update(dto, { transaction });
+            if (dto.budget_items){
+                this.budgetItemsService.validateUniqueNames(dto.budget_items);
+                await this.budgetItemsService.sync(project.id, dto.budget_items, transaction);
+            }
 
+            await project.update(dto, { transaction });
             return await project.reload({
                 include: [
                     {model: Category, as: 'category_data'}, 

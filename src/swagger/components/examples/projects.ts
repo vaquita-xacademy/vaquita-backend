@@ -22,11 +22,11 @@ export default {
                     budget_items: [
                         {
                             name: "Materiales de construcción",
-                            amount: 100,
+                            quantity: 100
                         },
                         {
                             name: "Mano de obra",
-                            amount: 200,
+                            quantity: 20,
                         },
                     ],
                     created_at: "2025-12-17T17:00:00Z",
@@ -163,12 +163,20 @@ export default {
                     },
                     budget_items: [
                         {
-                            name: "Materiales: Ladrillos, cemento, arena, etc.",
-                            amount: 100,
+                            name: "Semillas de estación",
+                            quantity: 50,
                         },
                         {
-                            name: "Mano de obra: Albañiles, electricistas, etc.",
-                            amount: 200,
+                            name: "Macetas",
+                            quantity: 10,
+                        },
+                        {
+                            name: "Palas",
+                            quantity: 2,
+                        },
+                        {
+                            name: "Tierra fertil x bolsa",
+                            quantity: 30,
                         },
                     ],
                     created_at: "2025-12-17T17:00:00Z",
@@ -199,12 +207,9 @@ export default {
                     },
                     budget_items: [
                         {
-                            name: "Materiales: Ladrillos, cemento, arena, etc.",
-                            amount: 100,
-                        },
-                        {
-                            name: "Mano de obra: Albañiles, electricistas, etc.",
-                            amount: 200,
+                            id: 1,
+                            name: "Semillas de lechuga",
+                            quantity: 30,
                         },
                     ],
                     created_at: "2025-12-17T17:00:00Z",
