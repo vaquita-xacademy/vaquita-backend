@@ -72,15 +72,15 @@ export default {
                 description: "Nombre del item del presupuesto",
                 example: "Compra de plantines nativos",
             },
-            amount: {
+            quantity: {
                 type: "number",
-                description: "Monto del item del presupuesto",
-                example: 400,
+                description: "Cantidad del item del presupuesto",
+                example: 1,
             },
         },
         required: [
             "name",
-            "amount",
+            "quantity",
         ],
     },
     UpdateProjectRequestSchema: {
@@ -138,6 +138,31 @@ export default {
                 },
             },
         },
+    },
+    UpdateBudgetItemRequestSchema: {
+        type: "object",
+        properties: {
+            id: {
+                type: "integer",
+                description: "ID del ítem existente. Si se omite, el ítem se creará como nuevo.",
+                example: 1,
+                nullable: true,
+            },
+            name: {
+                type: "string",
+                description: "Nombre del item del presupuesto",
+                example: "Materiales",
+            },
+            quantity: {
+                type: "number",
+                description: "Cantidad del item del presupuesto",
+                example: 1,
+            },
+        },
+        required: [
+            "name",
+            "quantity",
+        ],
     },
     UpdateProjectStatusRequestSchema: {
         type: "object",

@@ -9,14 +9,17 @@ import { ListPaginateProjectQuery } from "../../types/interfaces";
 import { toPaginate } from "../../helpers/paginate";
 import { ProjectResource } from "./resource/project.resource";
 import { Op, Order, Transaction, WhereOptions } from "sequelize";
-import { ensureNoDonations} from "./rules/project.rules";
+import { ensureCanUpdateGoal, ensureNoDonations} from "./rules/project.rules";
 import { BudgetItemsService } from "../budget-items/budget-items.service";
+import { capitalizeText } from "../../helpers/text-transform";
 
 export class ProjectService {
     constructor(private readonly budgetItemsService: BudgetItemsService ) {}
 
     public async create(userId: number, dto: CreateProjectDTO) {
         
+        if (dto.budget_items) this.budgetItemsService.validateUniqueNames(dto.budget_items);
+
         return sequelize.transaction(async (transaction) => {
             await this.validateUniqueTitle(dto.title, undefined, transaction);
             const slug = slugify(dto.title, { lower: true, strict: true });
@@ -43,10 +46,6 @@ export class ProjectService {
                     transaction
                 }
             );
-
-            if (!projectCreated) {
-                throw new InternalServerErrorException("No se pudo recuperar el proyecto creado");
-            }
 
             await projectCreated.reload({
                 include: [
@@ -95,7 +94,7 @@ export class ProjectService {
         const project = await Project.findOne({
             where: { slug },
             include: [
-                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "amount"]},
+                {model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "quantity"]},
                 { model: Category, as: "category_data", attributes: ["id", "name"], },
                 { model: User, as: "owner", attributes: ["id", "name"], },
             ],
@@ -112,6 +111,7 @@ export class ProjectService {
     public async listByOwner(ownerId: number, queryPaginate: ListPaginateProjectQuery) {
         const include = [
             { model: Category, as: "category_data", attributes: ["id", "name"] },
+             { model: User, as: "owner", attributes: ["id", "name"] },
         ];
         const where: WhereOptions = { owner_id: ownerId };
         const order = this.matchSortOption(queryPaginate.sort) as Order;
@@ -128,7 +128,7 @@ export class ProjectService {
             include,
             where,
             order,
-            attributes: Project.attributes,
+            attributes: Project.cardAttributes,
         });
 
         const paginated = toPaginate<Project>(result);
@@ -146,13 +146,19 @@ export class ProjectService {
             throw new ForbiddenException("No tienes permiso para editar este proyecto");
         }
 
-        if (dto.title && dto.title !== project.title) {
+        if (dto.title && dto.title !== project.title)
             await this.validateUniqueTitle(dto.title, projectId);
-        }
+
+        if (dto.goal_amount !== undefined)
+            ensureCanUpdateGoal(project.current_amount, dto.goal_amount);
 
         const projectUpdate = await sequelize.transaction(async (transaction) => {
-            await project.update(dto, { transaction });
+            if (dto.budget_items){
+                this.budgetItemsService.validateUniqueNames(dto.budget_items);
+                await this.budgetItemsService.sync(project.id, dto.budget_items, transaction);
+            }
 
+            await project.update(dto, { transaction });
             return await project.reload({
                 include: [
                     {model: Category, as: 'category_data'}, 
@@ -195,7 +201,7 @@ export class ProjectService {
         ensureNoDonations(project.current_amount);
 
         await project.destroy();
-        return true;
+        return { message: "Proyecto eliminado exitosamente" };
     }
 
     private matchSortOption(sortOption?: SortOptions) {
@@ -212,9 +218,10 @@ export class ProjectService {
 
     private async validateUniqueTitle(title: string, projectId?: number, transaction?: Transaction){
         if(!title) return;
+        const cleanTitle = capitalizeText(title);
 
         const projectExists = await Project.findOne({
-            where: { title, status: ProjectStatus.ACTIVE,
+            where: { title: cleanTitle, status: ProjectStatus.ACTIVE,
                 ...(projectId && { id: { [Op.ne]: projectId } })
             }, transaction
         });
@@ -244,5 +251,19 @@ export class ProjectService {
             items: projects.map(ProjectResource.toCard),
         };
 
+    }
+
+    public async findById(id: number) {
+        const project = await Project.findByPk(id, {
+            include: [
+                { model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "quantity"] },
+                { model: Category, as: "category_data", attributes: ["id", "name"], },
+                { model: User, as: "owner", attributes: ["id", "name"], },
+            ],
+            attributes: Project.attributes,
+        });
+
+        if (!project) throw new NotFoundException("Proyecto no encontrado");
+        return project;
     }
 }

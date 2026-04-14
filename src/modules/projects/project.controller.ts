@@ -123,4 +123,16 @@ export class ProjectController {
             return errorResponse(response, error.message, statusCode);
         }
     };
+
+    public findById = async (request: Request, response: Response) => {
+        try {
+            const { id } = response.locals.params as IdParamDTO;
+            const project = await this.projectService.findById(id);
+
+            return success(response, { project: ProjectResource.toResponse(project) }, 200);
+        } catch (error: any) {
+            const statusCode = error.status ?? 500;
+            return errorResponse(response, error.message, statusCode);
+        }
+    };
 }

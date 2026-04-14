@@ -73,13 +73,17 @@ module.exports = {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+      },
+      deleted_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
       }
     });
 
     await queryInterface.addIndex("projects", ["title"], {
       name: "projects_title_active_unique",
       unique: true,
-      where: { status: ProjectStatus.ACTIVE,},
+      where: { status: ProjectStatus.ACTIVE, deleted_at: null },
     });
 
     await queryInterface.addIndex("projects", ["location"],{

@@ -5,7 +5,7 @@ export class BudgetItemsResource {
         return {
             id: item.id,
             name: item.name,
-            amount: Number(item.amount),
+            quantity: item.quantity,
         };
     }
 

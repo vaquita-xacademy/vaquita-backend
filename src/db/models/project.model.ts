@@ -5,6 +5,7 @@ import Category from "./category.model";
 import BudgetItem from "./budget_items.model";
 import { makePaginate, PaginateOptions, PaginationConnection } from "sequelize-cursor-pagination";
 import User from "./user.model";
+import { capitalizeText } from "../../helpers/text-transform";
 
 export interface Location {
     province: string;
@@ -25,6 +26,7 @@ export class Project extends Model {
     public location!: Location;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+    public readonly deleted_at?: Date;
 
     declare category_data?: NonAttribute<Category>;
     declare budget_items?: NonAttribute<BudgetItem[]>;
@@ -104,8 +106,17 @@ Project.init(
     {
         sequelize,
         tableName: "projects",
+        underscored: true,
+        paranoid: true,
         hooks: {
             beforeSave: (project: Project) => {
+                if (project.title) { project.title = capitalizeText(project.title); }
+
+                if(project.location) {
+                    project.location.province = capitalizeText(project.location.province);
+                    project.location.city = capitalizeText(project.location.city);
+                }
+                
                 const goal = Number(project.goal_amount);
                 const current = Number(project.current_amount);
 

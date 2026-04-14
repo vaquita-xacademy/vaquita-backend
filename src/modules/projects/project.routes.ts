@@ -35,7 +35,13 @@ router.get(
 );
 
 router.get(
-    "/:slug",
+    "/:id",
+    validateParams(IdParamDTO),
+    projectController.findById
+);
+
+router.get(
+    "/s/:slug",
     validateParams(SlugParamDTO),
     projectController.getBySlug
 );
@@ -55,6 +61,14 @@ router.patch(
     validateParams(IdParamDTO),
     validateDto(UpdateProjectDTO),
     projectController.update
+);
+
+router.delete(
+    "/:id",
+    authenticateJwt,
+    authorizeProfile,
+    validateParams(IdParamDTO),
+    projectController.delete
 );
 
 router.patch(
