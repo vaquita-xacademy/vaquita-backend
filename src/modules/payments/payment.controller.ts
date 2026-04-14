@@ -56,4 +56,29 @@ export class PaymentController {
         }
     }
 
+    public processPayment = async (request: Request, response: Response) => {
+
+        try {
+
+            const topic = (request.query.topic || request.query.type) as string;
+
+            if (topic != "payment")
+                return response.status(200).send();
+
+            const paymentProvider = new MercadoPagoProvider();
+            const paymentId = request.query.id as string;
+
+            const payment = await paymentProvider.getPayment(paymentId);
+
+            success(response, {
+                payment
+            }, 200);
+        } catch (error: any) {
+            errorResponse(
+                response,
+                error.message,
+                error.status ?? 500
+            );
+        }
+    }
 }
