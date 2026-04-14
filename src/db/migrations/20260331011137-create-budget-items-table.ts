@@ -19,9 +19,10 @@ module.exports = {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      amount: {
-        type: DataTypes.DECIMAL(15, 2),
+      quantity: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1,
       },
       created_at: {
         type: DataTypes.DATE,
@@ -32,9 +33,14 @@ module.exports = {
         allowNull: false,
       },
     });
+  
+    await queryInterface.addIndex("budget_items", ["project_id"], {
+      name: "idx_budget_items_project_id",
+    })
   },
 
   async down (queryInterface: QueryInterface) {
+    await queryInterface.removeIndex("budget_items", "idx_budget_items_project_id");
     await queryInterface.dropTable("budget_items");
   }
 };

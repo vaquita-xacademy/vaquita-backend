@@ -119,4 +119,19 @@ export default {
             },
         }
     },
+    ProjectByIdSuccessResponse: {
+        description: "Proyecto obtenido exitosamente",
+        content: {
+            "application/json": {
+                schema: {
+                    $ref: "#/components/schemas/SuccessSchema"
+                },
+                examples: {
+                    success: {
+                        $ref: "#/components/examples/ProjectByIdSuccessExample"
+                    },
+                },
+            },
+        }
+    },
 }
