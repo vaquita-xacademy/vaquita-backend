@@ -6,7 +6,7 @@ export interface IPaymentProvider {
   getPayment(id: string): Promise<PaymentResult>;
 }
 
-export interface DataCreatePayment {
+export interface DataCreateMercadoPagoPayment {
   items: Items,
   payer?: Payer | undefined,
   back_urls?: BackUrls | undefined,

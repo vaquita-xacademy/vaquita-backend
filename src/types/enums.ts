@@ -30,3 +30,9 @@ export enum SortOptions {
     PROGRESS_ASC = "progress_asc",
     PROGRESS_DESC = "progress_desc"
 }
+
+export enum PaymentStatus {
+    PENDING = "pending",
+    APPROVED = "approved",
+    REJECTED = "rejected",
+}

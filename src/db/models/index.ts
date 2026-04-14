@@ -5,6 +5,7 @@ import Project from "./project.model";
 import User from "./user.model";
 import VerifiedProfile from "./verified-profile.model";
 import Donation from "./donation.model";
+import Payment from "./payment.model";
 
 export function setupAssociations() {
   // User ↔ VerifiedProfile (1:1)
@@ -29,6 +30,11 @@ export function setupAssociations() {
 
   Project.hasMany(BudgetItem, { foreignKey: "project_id", as: "budget_items" });
   BudgetItem.belongsTo(Project, { foreignKey: "project_id", as: "project" });
+
+  Payment.hasOne(Donation, { foreignKey: "payment_id", as: "donation" });
+  Donation.belongsTo(Payment, { foreignKey: "payment_id", as: "payment" });
+
+
 }
 
 export {
@@ -39,4 +45,5 @@ export {
   Category,
   Donation,
   BudgetItem,
+  Payment
 };

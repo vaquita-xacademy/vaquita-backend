@@ -9,6 +9,7 @@ export class Donation extends Model {
     public project_id!: number;
     public amount!: number;
     public message!: string | null;
+    public payment_id!: number | null;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
 
@@ -29,6 +30,13 @@ Donation.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: { model: "projects", key: "id" },
+            onUpdate: "CASCADE",
+            onDelete: "RESTRICT",
+        },
+        payment_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: { model: "payments" },
             onUpdate: "CASCADE",
             onDelete: "RESTRICT",
         },
