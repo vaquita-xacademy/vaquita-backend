@@ -105,7 +105,7 @@ export default {
             },
         },
     },
-    "/api/v1/projects/{slug}": {
+    "/api/v1/projects/s/{slug}": {
         get: {
             summary: "Obtener un proyecto por slug",
             description: "Endpoint para obtener un proyecto por slug",
@@ -298,6 +298,37 @@ export default {
                 },
                 "403": {
                     $ref: "#/components/responses/ForbiddenResponse"
+                },
+                "404": {
+                    $ref: "#/components/responses/ModelNotFoundResponse"
+                },
+                "500": {
+                    $ref: "#/components/responses/InternalServerErrorResponse"
+                },
+            },
+        },
+        get: {
+            summary: "Obtener un proyecto por ID",
+            description: "Endpoint para obtener un proyecto por ID",
+            tags: ["Projects"],
+            parameters: [
+                {
+                    in: "path",
+                    name: "id",
+                    required: true,
+                    schema: {
+                        type: "integer",
+                        description: "ID del proyecto.",
+                        example: 1
+                    }
+                }
+            ],
+            responses: {
+                "200": {
+                    $ref: "#/components/responses/ProjectByIdSuccessResponse",
+                },
+                "400": {
+                    $ref: "#/components/responses/BadRequestResponse"
                 },
                 "404": {
                     $ref: "#/components/responses/ModelNotFoundResponse"

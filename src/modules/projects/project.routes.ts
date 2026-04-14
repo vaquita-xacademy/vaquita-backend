@@ -35,7 +35,13 @@ router.get(
 );
 
 router.get(
-    "/:slug",
+    "/:id",
+    validateParams(IdParamDTO),
+    projectController.findById
+);
+
+router.get(
+    "/s/:slug",
     validateParams(SlugParamDTO),
     projectController.getBySlug
 );

@@ -110,6 +110,7 @@ export class ProjectService {
     public async listByOwner(ownerId: number, queryPaginate: ListPaginateProjectQuery) {
         const include = [
             { model: Category, as: "category_data", attributes: ["id", "name"] },
+             { model: User, as: "owner", attributes: ["id", "name"] },
         ];
         const where: WhereOptions = { owner_id: ownerId };
         const order = this.matchSortOption(queryPaginate.sort) as Order;
@@ -126,7 +127,7 @@ export class ProjectService {
             include,
             where,
             order,
-            attributes: Project.attributes,
+            attributes: Project.cardAttributes,
         });
 
         const paginated = toPaginate<Project>(result);
@@ -248,5 +249,19 @@ export class ProjectService {
             items: projects.map(ProjectResource.toCard),
         };
 
+    }
+
+    public async findById(id: number) {
+        const project = await Project.findByPk(id, {
+            include: [
+                { model: BudgetItem, as: 'budget_items', attributes: ["id", "name", "quantity"] },
+                { model: Category, as: "category_data", attributes: ["id", "name"], },
+                { model: User, as: "owner", attributes: ["id", "name"], },
+            ],
+            attributes: Project.attributes,
+        });
+
+        if (!project) throw new NotFoundException("Proyecto no encontrado");
+        return project;
     }
 }
