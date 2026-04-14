@@ -26,6 +26,7 @@ export class Project extends Model {
     public location!: Location;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+    public readonly deleted_at?: Date;
 
     declare category_data?: NonAttribute<Category>;
     declare budget_items?: NonAttribute<BudgetItem[]>;
@@ -105,6 +106,8 @@ Project.init(
     {
         sequelize,
         tableName: "projects",
+        underscored: true,
+        paranoid: true,
         hooks: {
             beforeSave: (project: Project) => {
                 if (project.title) { project.title = capitalizeText(project.title); }

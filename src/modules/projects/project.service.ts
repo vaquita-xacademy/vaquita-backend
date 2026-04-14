@@ -11,6 +11,7 @@ import { ProjectResource } from "./resource/project.resource";
 import { Op, Order, Transaction, WhereOptions } from "sequelize";
 import { ensureCanUpdateGoal, ensureNoDonations} from "./rules/project.rules";
 import { BudgetItemsService } from "../budget-items/budget-items.service";
+import { capitalizeText } from "../../helpers/text-transform";
 
 export class ProjectService {
     constructor(private readonly budgetItemsService: BudgetItemsService ) {}
@@ -200,7 +201,7 @@ export class ProjectService {
         ensureNoDonations(project.current_amount);
 
         await project.destroy();
-        return true;
+        return { message: "Proyecto eliminado exitosamente" };
     }
 
     private matchSortOption(sortOption?: SortOptions) {
@@ -217,9 +218,10 @@ export class ProjectService {
 
     private async validateUniqueTitle(title: string, projectId?: number, transaction?: Transaction){
         if(!title) return;
+        const cleanTitle = capitalizeText(title);
 
         const projectExists = await Project.findOne({
-            where: { title, status: ProjectStatus.ACTIVE,
+            where: { title: cleanTitle, status: ProjectStatus.ACTIVE,
                 ...(projectId && { id: { [Op.ne]: projectId } })
             }, transaction
         });
