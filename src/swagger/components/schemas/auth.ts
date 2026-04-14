@@ -35,7 +35,7 @@ export default {
             },
         },
         required: [
-            "full_name",
+            "name",
             "email",
             "password",
             "password_confirmation",
@@ -60,47 +60,6 @@ export default {
             },
         },
         required: ["email", "password"],
-    },
-    SessionResponseSchema: {
-        type: "object",
-        properties: {
-            user: {
-                type: "object",
-                properties: {
-                    id: {
-                        type: "integer",
-                        description: "ID del usuario",
-                        example: 1,
-                    },
-                    name: {
-                        type: "string",
-                        description: "Nombre del usuario",
-                        example: "Juan Perez",
-                    },
-                    email: {
-                        type: "string",
-                        format: "email",
-                        description: "Email del usuario",
-                        example: "example@example.com",
-                    },
-                    role: {
-                        type: "string",
-                        description: "Rol del usuario",
-                        example: "donor",
-                    },
-                },
-            },
-        },
-    },
-    LogoutSuccessResponse: {
-        description: "Logout exitoso",
-        type: "object",
-        properties: {
-            message: { 
-                type: "string", 
-                example: "Logout exitoso" 
-            },
-        },
     },
 
 }

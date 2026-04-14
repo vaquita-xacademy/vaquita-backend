@@ -7,10 +7,12 @@ import { UpdateProjectStatusDTO } from "./dto/update-project-status.dto";
 import { authenticateJwt } from "../../middlewares/authenticate.middleware";
 import { authorizeProfile } from "../../middlewares/authorize-profile.middleware";
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
+import { DonationController } from "../donations/donation.controller";
 import { IdParamDTO, SlugParamDTO } from "./dto/project-param.dto";
 
 const router = Router();
 const projectController = new ProjectController();
+const donationController = new DonationController();
 
 // Publicos
 router.get(
@@ -62,12 +64,11 @@ router.patch(
     projectController.updateStatus
 );
 
-router.delete(
-    "/:id",
+// Owner/Admin: ver donaciones de un proyecto
+router.get(
+    "/:id/donations",
     authenticateJwt,
-    authorizeProfile,
-    validateParams(IdParamDTO),
-    projectController.delete
+    donationController.listByProject
 );
 
 export default router;

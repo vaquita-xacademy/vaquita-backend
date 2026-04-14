@@ -228,7 +228,6 @@ export default {
         summary: "Proyecto eliminado exitosamente",
         value: {
             data: {
-                status: true,
                 message: "Proyecto eliminado exitosamente",
             },
         },

@@ -4,27 +4,32 @@ import Category from "./category.model";
 import Project from "./project.model";
 import User from "./user.model";
 import VerifiedProfile from "./verified-profile.model";
+import Donation from "./donation.model";
 
 export function setupAssociations() {
-  // Setear relaciones
-
-  // Ejemplo
+  // User ↔ VerifiedProfile (1:1)
   User.hasOne(VerifiedProfile, { foreignKey: "user_id", as: "verified_profile" });
   VerifiedProfile.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
-  //Projects
+  // User ↔ Project (1:N)
   User.hasMany(Project, { foreignKey: "owner_id", as: "projects" });
   Project.belongsTo(User, { foreignKey: "owner_id", as: "owner" });
 
-  //Categories
+  // Category ↔ Project (1:N)
   Category.hasMany(Project, { foreignKey: "category_id", as: "projects" });
   Project.belongsTo(Category, { foreignKey: "category_id", as: "category_data" });
 
-  //Budget Items
+  // User (donor) ↔ Donation (1:N)
+  User.hasMany(Donation, { foreignKey: "donor_id", as: "donations" });
+  Donation.belongsTo(User, { foreignKey: "donor_id", as: "donor" });
+
+  // Project ↔ Donation (1:N)
+  Project.hasMany(Donation, { foreignKey: "project_id", as: "donations" });
+  Donation.belongsTo(Project, { foreignKey: "project_id", as: "project" });
+
   Project.hasMany(BudgetItem, { foreignKey: "project_id", as: "budget_items" });
   BudgetItem.belongsTo(Project, { foreignKey: "project_id", as: "project" });
-
-};
+}
 
 export {
   sequelize,
@@ -32,5 +37,6 @@ export {
   VerifiedProfile,
   Project,
   Category,
-  BudgetItem
+  Donation,
+  BudgetItem,
 };
