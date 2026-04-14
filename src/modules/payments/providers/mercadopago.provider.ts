@@ -1,0 +1,42 @@
+import MercadoPagoConfig, { Payment, Preference, } from "mercadopago";
+import { DataCreatePayment, IPaymentProvider } from "../interfaces/payment-provider.interface";
+import { mercadoPagoConfig } from "../../../config/mercado_pago.config";
+import { PreferenceRequest } from "mercadopago/dist/clients/preference/commonTypes";
+
+const client = new MercadoPagoConfig({
+    accessToken: mercadoPagoConfig.access_secret
+});
+
+export class MercadoPagoProvider implements IPaymentProvider {
+    // private config: MercadoPagoConfig;
+
+    constructor() {
+        // this.config = new MercadoPagoConfig({
+        //     accessToken: mercadoPagoConfig.access_secret
+        // });
+    }
+
+    public async createPayment(data: DataCreatePayment) {
+        return this.createPreference(data);
+    }
+
+    public async getPayment(id: string): Promise<any> {
+        const paymentHandler = new Payment(client);
+        const payment = await paymentHandler.get({ id: id });
+        return payment;
+    }
+
+    private async createPreference(data: DataCreatePayment) {
+
+        const preference: Preference = new Preference(client);
+        const body: PreferenceRequest = {
+            items: [data.items],
+            payer: data.payer,
+            back_urls: data.back_urls,
+            notification_url: data.notification_url,
+            external_reference: data.externalReference
+        };
+
+        return await preference.create({ body });
+    }
+}
