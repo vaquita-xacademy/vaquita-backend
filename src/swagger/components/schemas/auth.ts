@@ -47,7 +47,7 @@ export default {
         properties: {
             email: {
                 type: "string",
-                example: "example@example.com",
+                example: "juan@example.com",
                 format: "email",
                 description: "Email del usuario"
             },
@@ -55,7 +55,7 @@ export default {
                 type: "string",
                 minLenght: 8,
                 maxLenght: 60,
-                example: "Vaquita1_",
+                example: "vaquita1A_",
                 description: "Contraseña del usuario"
             },
         },
