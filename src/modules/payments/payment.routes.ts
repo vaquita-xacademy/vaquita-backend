@@ -3,10 +3,14 @@ import { PaymentController } from "./payment.controller";
 import { authenticateJwt } from "../../middlewares/authenticate.middleware";
 import { CreatePaymentDTO } from "./dto/create-payment.dto";
 import { validateDto } from "../../middlewares/validate-dto.middleware";
+import { ProjectService } from "../projects/project.service";
+import { BudgetItemsService } from "../budget-items/budget-items.service";
 
 const router = Router();
 
-const controller = new PaymentController;
+const budgetItemsService = new BudgetItemsService;
+const projectService = new ProjectService(budgetItemsService);
+const controller = new PaymentController(projectService);
 
 router.post(
     '/create-preference',

@@ -8,13 +8,6 @@ const client = new MercadoPagoConfig({
 });
 
 export class MercadoPagoProvider implements IPaymentProvider {
-    // private config: MercadoPagoConfig;
-
-    constructor() {
-        // this.config = new MercadoPagoConfig({
-        //     accessToken: mercadoPagoConfig.access_secret
-        // });
-    }
 
     public async createPayment(data: DataCreatePayment) {
         return this.createPreference(data);
