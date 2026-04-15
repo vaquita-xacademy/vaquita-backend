@@ -101,7 +101,7 @@ export default {
             },
             responses: {
                 "200": {
-                    $ref: "#/components/responses/SuccessResponse"
+                    $ref: "#/components/responses/UpdateProjectUpdateSuccessResponse"
                 },
                 "400": {
                     $ref: "#/components/responses/BadRequestResponse"
