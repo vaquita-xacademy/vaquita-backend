@@ -1,5 +1,5 @@
 import MercadoPagoConfig, { Payment, Preference, } from "mercadopago";
-import { DataCreatePayment, IPaymentProvider } from "../interfaces/payment-provider.interface";
+import { DataCreateMercadoPagoPayment, IPaymentProvider } from "../interfaces/payment-provider.interface";
 import { mercadoPagoConfig } from "../../../config/mercado_pago.config";
 import { PreferenceRequest } from "mercadopago/dist/clients/preference/commonTypes";
 
@@ -9,7 +9,7 @@ const client = new MercadoPagoConfig({
 
 export class MercadoPagoProvider implements IPaymentProvider {
 
-    public async createPayment(data: DataCreatePayment) {
+    public async createPayment(data: DataCreateMercadoPagoPayment) {
         return this.createPreference(data);
     }
 
@@ -19,7 +19,7 @@ export class MercadoPagoProvider implements IPaymentProvider {
         return payment;
     }
 
-    private async createPreference(data: DataCreatePayment) {
+    private async createPreference(data: DataCreateMercadoPagoPayment) {
 
         const preference: Preference = new Preference(client);
         const body: PreferenceRequest = {

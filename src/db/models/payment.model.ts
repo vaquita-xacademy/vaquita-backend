@@ -1,7 +1,5 @@
 import { DataTypes, Model, NonAttribute } from "sequelize";
 import { sequelize } from "../sequelize";
-import User from "./user.model";
-import Project from "./project.model";
 import { PaymentStatus } from "../../types/enums";
 
 export class Payment extends Model {

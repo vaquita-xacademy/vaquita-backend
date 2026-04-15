@@ -3,7 +3,7 @@ import { BackUrls, Payer } from "mercadopago/dist/clients/preference/commonTypes
 
 export interface IPaymentProvider {
   createPayment(data: any): Promise<any>;
-  getPayment(id: string): Promise<PaymentResult>;
+  getPayment(id: string): Promise<any>;
 }
 
 export interface DataCreateMercadoPagoPayment {
