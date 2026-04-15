@@ -12,3 +12,8 @@ export interface ListPaginateProjectQuery extends Paginate {
     search?: string,
     status?: ProjectStatus
 }
+
+export interface ImageUploadResult {
+    url: string;
+    publicId: string;
+}
