@@ -7,6 +7,7 @@ export class Category extends Model {
     public icon_name?: string;
     public readonly created_at!: Date;
     public readonly updated_at!: Date;
+    public readonly deleted_at?: Date;
 }
 
 Category.init(
@@ -23,6 +24,8 @@ Category.init(
     {
         sequelize,
         tableName: "categories",
+        paranoid: true,
+        underscored: true,
     }
 );
 
