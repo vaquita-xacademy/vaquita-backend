@@ -32,15 +32,11 @@ export function setupAssociations() {
   Project.hasMany(BudgetItem, { foreignKey: "project_id", as: "budget_items" });
   BudgetItem.belongsTo(Project, { foreignKey: "project_id", as: "project" });
 
-<<<<<<< HEAD
   Payment.hasOne(Donation, { foreignKey: "payment_id", as: "donation" });
   Donation.belongsTo(Payment, { foreignKey: "payment_id", as: "payment" });
 
-
-=======
   Project.hasMany(ProjectUpdate, { foreignKey: "project_id", as: "project_updates" });
   ProjectUpdate.belongsTo(Project, { foreignKey: "project_id", as: "project" });
->>>>>>> dev
 }
 
 export {
@@ -51,9 +47,6 @@ export {
   Category,
   Donation,
   BudgetItem,
-<<<<<<< HEAD
-  Payment
-=======
+  Payment,
   ProjectUpdate,
->>>>>>> dev
 };
