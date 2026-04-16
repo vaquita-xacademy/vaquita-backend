@@ -9,6 +9,7 @@ import { authorizeProfile } from "../../middlewares/authorize-profile.middleware
 import { ListProjectsQueryDTO } from "./dto/list-projects-query.dto";
 import { DonationController } from "../donations/donation.controller";
 import { IdParamDTO, SlugParamDTO } from "./dto/project-param.dto";
+import projectUpdateRoutes from "../project-updates/project-update.routes";
 
 const router = Router();
 const projectController = new ProjectController();
@@ -84,5 +85,7 @@ router.get(
     authenticateJwt,
     donationController.listByProject
 );
+
+router.use("/:projectId/updates", projectUpdateRoutes);
 
 export default router;

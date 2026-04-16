@@ -13,10 +13,14 @@ export default [
     },
     {
         name: "Projects",
-        description: "Gestión de proyectos de crowdfunding",
+        description: "Gestión de proyectos",
     },
     {
         name: "Donations",
         description: "Donaciones a proyectos (simulado — integración futura con Mercado Pago)",
     },
+    {
+        name: "Project Updates",
+        description: "Endpoints para gestión de actualizaciones de proyectos"
+    }
 ]

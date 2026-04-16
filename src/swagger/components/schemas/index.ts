@@ -4,6 +4,7 @@ import authSchema from "./auth";
 import projectsSchema from "./projects";
 import paginateSchema from "./paginate";
 import donationsSchema from "./donations";
+import projectUpdatesSchema from "./project-updates";
 
 export default {
     ...errorSchema,
@@ -11,5 +12,6 @@ export default {
     ...authSchema,
     ...projectsSchema,
     ...paginateSchema,
-    ...donationsSchema
+    ...donationsSchema,
+    ...projectUpdatesSchema
 }

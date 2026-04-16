@@ -36,7 +36,7 @@ export class ProjectResource {
                 province: project.location.province,
                 city: project.location.city,
             },
-            category: project.category_data ? project.category_data.name : null,
+            category: project.category_data ?? null,
             owner: project.owner ? { id: project.owner.id, name: project.owner.name } : null,
             progress: Number(project.progress),
             created_at: project.created_at,
