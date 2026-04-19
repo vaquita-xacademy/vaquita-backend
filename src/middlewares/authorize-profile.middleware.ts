@@ -44,3 +44,19 @@ export const authorizeProfile = async (req: Request, res: Response, next: NextFu
     return errorResponse(res, "No esta autorizado", 403);
 };
 
+export const authorizeRoles = (...allowedRoles: UserRole[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const user = req.user as User;
+
+        if (!user) {
+            return errorResponse(
+                res, "No está autenticado", 401
+            );
+        }
+
+        if (!allowedRoles.includes(user.role))
+            return errorResponse(res, "No tiene permiso para realizar esta acción", 403);
+        next();
+    };
+}
+

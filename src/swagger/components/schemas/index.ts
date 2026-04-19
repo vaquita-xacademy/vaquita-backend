@@ -4,6 +4,8 @@ import authSchema from "./auth";
 import projectsSchema from "./projects";
 import paginateSchema from "./paginate";
 import projectUpdatesSchema from "./project-updates";
+import categories from "./categories";
+
 
 export default {
     ...errorSchema,
@@ -11,5 +13,6 @@ export default {
     ...authSchema,
     ...projectsSchema,
     ...paginateSchema,
-    ...projectUpdatesSchema
+    ...projectUpdatesSchema,
+    ...categories
 }

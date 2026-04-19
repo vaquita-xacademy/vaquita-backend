@@ -22,5 +22,9 @@ export default [
     {
         name: "Project Updates",
         description: "Endpoints para gestión de actualizaciones de proyectos"
+    },
+    {
+        name: "Categories",
+        description: "Endpoints para gestión de categorías"
     }
 ]

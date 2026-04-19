@@ -57,7 +57,6 @@ export class ProjectUpdateController {
     };
 
     public index = async (request: Request, response: Response) => {
-        console.log('ACTUALIZACIONES del proyecto')
         try {
             const params = response.locals.params as ProjectIdParamDTO;
             const projectId = params.projectId;
