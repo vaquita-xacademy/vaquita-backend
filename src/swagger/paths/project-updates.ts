@@ -53,7 +53,7 @@ export default {
             },
             responses: {
                 "201": {
-                    $ref: "#/components/responses/CreatedResponse"
+                    $ref: "#/components/responses/CreateProjectUpdateSuccessResponse"
                 },
                 "400": {
                     $ref: "#/components/responses/BadRequestResponse"
