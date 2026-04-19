@@ -5,7 +5,7 @@ import Category from "./category.model";
 import BudgetItem from "./budget_items.model";
 import { makePaginate, PaginateOptions, PaginationConnection } from "sequelize-cursor-pagination";
 import User from "./user.model";
-import { capitalizeText } from "../../helpers/text-transform";
+import { preventSlugChange, projectTransform } from "../hooks/project.hook";
 
 export interface Location {
     province: string;
@@ -109,29 +109,8 @@ Project.init(
         underscored: true,
         paranoid: true,
         hooks: {
-            beforeSave: (project: Project) => {
-                if (project.title) { project.title = capitalizeText(project.title); }
-
-                if(project.location) {
-                    project.location.province = capitalizeText(project.location.province);
-                    project.location.city = capitalizeText(project.location.city);
-                }
-                
-                const goal = Number(project.goal_amount);
-                const current = Number(project.current_amount);
-
-                if (goal > 0) {
-                    const percentage = (current / goal) * 100;
-                    project.progress = Math.min(Math.round(percentage), 100);
-                }else {
-                    project.progress = 0;
-                }
-            },
-            beforeUpdate: (project: Project) => {
-                if (project.changed('slug')) {
-                    throw new Error("No se puede editar el slug del proyecto");
-                }
-            }
+            beforeSave: projectTransform,
+            beforeUpdate: preventSlugChange,
         }
     }
 );

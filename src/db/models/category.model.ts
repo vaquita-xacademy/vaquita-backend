@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../sequelize";
+import { capitalizeText } from "../../helpers/text-transform";
 
 export class Category extends Model {
     public id!: number;
@@ -25,7 +26,11 @@ Category.init(
         sequelize,
         tableName: "categories",
         paranoid: true,
-        underscored: true,
+        hooks: {
+            beforeSave: (category: Category) => {
+                category.name = capitalizeText(category.name);
+            },
+        },
     }
 );
 
