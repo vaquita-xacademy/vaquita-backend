@@ -19,7 +19,7 @@ router.get(
 router.post(
     "/", 
     authenticateJwt,
-    authorizeProfile,
+    // authorizeProfile,
     uploadImage("receipt"), 
     validateDto(CreateEvidenceDTO),
     projectUpdateController.create
@@ -28,7 +28,7 @@ router.post(
 router.patch(
     "/:id", 
     authenticateJwt,
-    authorizeProfile,
+    // authorizeProfile,
     uploadImage("receipt"), 
     validateDto(UpdateEvidenceDTO),
     projectUpdateController.update

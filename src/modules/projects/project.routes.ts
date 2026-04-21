@@ -50,7 +50,7 @@ router.get(
 router.post(
     "/",
     authenticateJwt,
-    authorizeProfile,
+    // authorizeProfile,
     validateDto(CreateProjectDTO),
     projectController.create
 );
@@ -58,7 +58,7 @@ router.post(
 router.patch(
     "/:id",
     authenticateJwt,
-    authorizeProfile,
+    // authorizeProfile,
     validateParams(IdParamDTO),
     validateDto(UpdateProjectDTO),
     projectController.update
@@ -67,7 +67,7 @@ router.patch(
 router.delete(
     "/:id",
     authenticateJwt,
-    authorizeProfile,
+    // authorizeProfile,
     validateParams(IdParamDTO),
     projectController.delete
 );
