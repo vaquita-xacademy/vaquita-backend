@@ -5,6 +5,7 @@ import projectsSchema from "./projects";
 import paginateSchema from "./paginate";
 import projectUpdatesSchema from "./project-updates";
 import categories from "./categories";
+import donations from "./donations";
 
 
 export default {
@@ -14,5 +15,6 @@ export default {
     ...projectsSchema,
     ...paginateSchema,
     ...projectUpdatesSchema,
-    ...categories
+    ...categories,
+    ...donations,
 }

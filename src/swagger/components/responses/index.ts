@@ -3,6 +3,7 @@ import errorResponses from "./error";
 import projectsResponses from "./projects";
 import projectUpdatesResponses from "./project-updates";
 import categoriesResponses from "./categories";
+import donations from "./donations";
 
 export default {
     ...authResponses,
@@ -10,4 +11,5 @@ export default {
     ...projectUpdatesResponses,
     ...errorResponses,
     ...categoriesResponses,
+    ...donations,
 }

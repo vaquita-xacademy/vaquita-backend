@@ -3,6 +3,7 @@ import errorExample from "./error";
 import projectsExample from "./projects";
 import projectUpdatesExample from "./project-updates";
 import categoriesExample from "./categories";
+import donations from "./donations";
 
 export default {
     ...authExample,
@@ -10,4 +11,5 @@ export default {
     ...projectUpdatesExample,
     ...categoriesExample,
     ...errorExample,
+    ...donations,
 }
